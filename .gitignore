@@ -1,0 +1,31 @@
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+
+# Mantener el lock file
+!.terraform.lock.hcl
+
+# Terraform overrides
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Logs
+crash.log
+*.log
+
+# Credenciales
+*.pem
+*.key
+*.pfx
+
+# VS Code
+.vscode/
+
+# Sistema
+.DS_Store
+Thumbs.db
