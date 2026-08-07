@@ -10,3 +10,10 @@ module "vpc" {
   database_subnets = var.database_subnets
 
 }
+
+module "ecr" {
+
+  source = "../../modules/ecr"
+
+}
+

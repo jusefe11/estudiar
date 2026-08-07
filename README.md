@@ -2,125 +2,178 @@
 
 ![AWS](https://img.shields.io/badge/AWS-Cloud-orange?logo=amazonaws)
 ![Terraform](https://img.shields.io/badge/Terraform-IaC-623CE4?logo=terraform)
-![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?logo=github)
-![Terraform](https://img.shields.io/badge/Infrastructure-as_Code-blue)
-![Status](https://img.shields.io/badge/Sprint%201-80%25-yellow)
+![Docker](https://img.shields.io/badge/Docker-Containers-2496ED?logo=docker)
+![Amazon ECR](https://img.shields.io/badge/Amazon-ECR-FF9900?logo=amazonaws)
+![GitHub](https://img.shields.io/badge/GitHub-Repository-black?logo=github)
+![License](https://img.shields.io/badge/License-MIT-green)
 
 ---
 
 # 📖 Descripción
 
-**BankCloud** es un proyecto diseñado para construir una plataforma empresarial sobre AWS utilizando Terraform e Infrastructure as Code (IaC).
+**BankCloud** es un laboratorio práctico de nivel profesional enfocado en el diseño, implementación y automatización de una plataforma empresarial sobre AWS utilizando **Terraform** e **Infrastructure as Code (IaC)**.
 
-El proyecto simula una infraestructura utilizada por una entidad financiera, implementando redes, seguridad, servicios compartidos, contenedores, bases de datos, monitoreo y CI/CD siguiendo las mejores prácticas de AWS Well-Architected Framework.
+El proyecto simula la infraestructura tecnológica de una entidad financiera implementando redes, seguridad, contenedores, almacenamiento, monitoreo, despliegues automatizados y servicios administrados siguiendo las mejores prácticas del **AWS Well-Architected Framework**.
+
+El objetivo es construir un proyecto completamente reproducible desde cero que sirva como portafolio profesional para cargos como:
+
+- Cloud Engineer
+- DevOps Engineer
+- AWS Solutions Architect
+- Platform Engineer
 
 ---
 
 # 🎯 Objetivos
 
-- Diseñar infraestructura empresarial en AWS.
-- Automatizar el aprovisionamiento mediante Terraform.
-- Implementar una arquitectura modular y reutilizable.
-- Aplicar buenas prácticas DevOps.
-- Construir un portafolio profesional.
+- Diseñar una arquitectura empresarial sobre AWS.
+- Automatizar toda la infraestructura mediante Terraform.
+- Construir módulos reutilizables.
+- Implementar Docker con imágenes optimizadas.
+- Publicar imágenes en Amazon ECR.
+- Desplegar aplicaciones sobre Amazon ECS Fargate.
+- Automatizar despliegues mediante GitHub Actions.
+- Implementar observabilidad.
+- Aplicar controles de seguridad.
+- Documentar completamente la solución.
 
 ---
 
 # 🛠 Tecnologías
 
-- AWS
-- Terraform
-- Git
-- GitHub
-- Docker
+## Cloud
+
+- Amazon Web Services (AWS)
+- Amazon VPC
 - Amazon ECS
 - Amazon ECR
 - Amazon RDS
+- IAM
+- CloudWatch
+- S3
+- DynamoDB
+- Elastic Load Balancer
+- Auto Scaling
+
+## Infrastructure as Code
+
+- Terraform
+
+## Contenedores
+
+- Docker
+- Docker Compose
+
+## DevOps
+
+- Git
+- GitHub
 - GitHub Actions
+
+## Observabilidad
+
 - CloudWatch
 - Prometheus
 - Grafana
+
+## Seguridad
+
 - AWS WAF
 - GuardDuty
+- Security Groups
+- Network ACL
+- IAM
 
 ---
 
 # 📂 Estructura del proyecto
 
 ```text
-terraform/
+bankcloud/
 │
-├── bootstrap/
-├── environments/
-│   ├── dev/
-│   ├── qa/
-│   └── prod/
+├── terraform/
+│   ├── bootstrap/
+│   ├── environments/
+│   │   ├── dev/
+│   │   ├── qa/
+│   │   └── prod/
+│   │
+│   ├── modules/
+│   │   ├── alb/
+│   │   ├── ecr/
+│   │   ├── ecs/
+│   │   ├── iam/
+│   │   ├── monitoring/
+│   │   ├── networking/
+│   │   ├── rds/
+│   │   ├── security/
+│   │   └── vpc/
+│   │
+│   ├── policies/
+│   ├── scripts/
+│   └── templates/
 │
-├── modules/
-│   ├── alb/
-│   ├── ecr/
-│   ├── ecs/
-│   ├── iam/
-│   ├── monitoring/
-│   ├── networking/
-│   ├── rds/
-│   ├── security/
-│   ├── shared/
-│   └── vpc/
+├── bankcloud-app/
+│   ├── frontend/
+│   ├── productcatalogservice/
+│   └── docker-compose.yml
 │
-├── policies/
-├── scripts/
-└── templates/
+└── README.md
 ```
 
 ---
 
-# 🏗 Arquitectura Sprint 1
+# 🏗 Arquitectura actual
 
 ```text
-                 AWS
-
-             +----------------+
-             |      VPC       |
-             +----------------+
-                    │
-      ┌─────────────┼─────────────┐
-      │             │             │
- Public Subnets  Private Subnets  Database Subnets
-      │             │             │
-      └────── Internet Gateway ───┘
-                    │
-               NAT Gateway
-                    │
-         Route Tables / NACL
-                    │
-           Security Groups
-                    │
-            VPC Endpoint S3
+                              Internet
+                                  │
+                           Internet Gateway
+                                  │
+                      ┌────────────────────┐
+                      │       AWS VPC      │
+                      └────────────────────┘
+                                  │
+          ┌───────────────────────┴────────────────────────┐
+          │                                                │
+     Public Subnets                                  Private Subnets
+          │                                                │
+          │                                          NAT Gateway
+          │                                                │
+          └───────────────────────┬────────────────────────┘
+                                  │
+                         Security Groups
+                                  │
+                          Amazon Elastic
+                        Container Registry
+                                  │
+                 ┌────────────────┴────────────────┐
+                 │                                 │
+       bankcloud/frontend          bankcloud/productcatalogservice
 ```
-
----
-
 # ✅ Sprint 1 – Arquitectura y Networking
 
-### Objetivo
+## Objetivo
 
-Construir la infraestructura base de AWS mediante Terraform utilizando una arquitectura modular y reutilizable.
+Construir la infraestructura base de AWS mediante Terraform utilizando una arquitectura modular, segura y completamente automatizada.
 
 ## Recursos implementados
 
+- ✅ Bootstrap Terraform
+- ✅ Backend remoto (Amazon S3)
+- ✅ Bloqueo del estado (Amazon DynamoDB)
 - ✅ VPC
-- ✅ Public Subnets
-- ✅ Private Subnets
-- ✅ Database Subnets
+- ✅ Subredes públicas
+- ✅ Subredes privadas
+- ✅ Subredes de base de datos
 - ✅ Internet Gateway
 - ✅ Elastic IP
 - ✅ NAT Gateway
-- ✅ Route Tables
-- ✅ Route Associations
+- ✅ Tablas de rutas
+- ✅ Asociaciones de tablas de rutas
 - ✅ Network ACL
 - ✅ Security Groups
-- ✅ VPC Endpoint (Amazon S3)
+- ✅ VPC Endpoint para Amazon S3
 
 ---
 
@@ -132,47 +185,42 @@ Construir la infraestructura base de AWS mediante Terraform utilizando una arqui
 terraform init
 terraform validate
 terraform plan
+terraform apply
 ```
 
-Resultado
-
-```
-Plan: 5 to add, 0 to change, 0 to destroy.
-```
-
----
-
-### Validación AWS
-
-Se verificó correctamente mediante AWS CLI:
+### Validación AWS CLI
 
 ```bash
 aws ec2 describe-vpcs
 aws ec2 describe-subnets
 aws ec2 describe-route-tables
 aws ec2 describe-internet-gateways
+aws ec2 describe-nat-gateways
 ```
 
-Se confirmó:
+### Resultado
 
-- VPC creada correctamente.
-- Internet Gateway asociado.
-- Route Tables configuradas.
-- Subredes públicas y privadas disponibles.
+- ✅ Infraestructura creada correctamente.
+- ✅ Backend remoto funcionando.
+- ✅ Estado almacenado en Amazon S3.
+- ✅ Bloqueo mediante DynamoDB.
+- ✅ Infraestructura completamente reproducible mediante Terraform.
 
 ---
 
-## Estado del Sprint 1
+## Estado Sprint 1
 
-| Actividad | Estado |
-|------------|--------|
-| Bootstrap | 🟡 |
-| Backend remoto | 🟡 |
+| Recurso | Estado |
+|---------|:------:|
+| Bootstrap Terraform | ✅ |
+| Backend remoto (S3) | ✅ |
+| DynamoDB Lock | ✅ |
 | VPC | ✅ |
 | Public Subnets | ✅ |
 | Private Subnets | ✅ |
 | Database Subnets | ✅ |
 | Internet Gateway | ✅ |
+| Elastic IP | ✅ |
 | NAT Gateway | ✅ |
 | Route Tables | ✅ |
 | Route Associations | ✅ |
@@ -180,39 +228,130 @@ Se confirmó:
 | Security Groups | ✅ |
 | VPC Endpoint S3 | ✅ |
 
+**Sprint 1: COMPLETADO ✅**
+
+---
+
+# ✅ Sprint 2 – Contenedores y Amazon ECR
+
+## Objetivo
+
+Containerizar los microservicios utilizando Docker, aplicar buenas prácticas de construcción de imágenes y publicarlas en Amazon Elastic Container Registry (ECR).
+
+## Funcionalidades implementadas
+
+- ✅ Dockerfile para Frontend
+- ✅ Dockerfile para Product Catalog Service
+- ✅ Multi-Stage Build
+- ✅ Ejecución con usuario no root
+- ✅ Health Checks
+- ✅ Optimización del tamaño de las imágenes
+- ✅ Archivo docker-compose.yml
+- ✅ Repositorios privados en Amazon ECR
+- ✅ Build de imágenes Docker
+- ✅ Publicación de imágenes en Amazon ECR
+
+---
+
+## Evidencias
+
+### Construcción de imágenes
+
+```bash
+docker build
+docker tag
+docker push
+```
+
+### Validación Amazon ECR
+
+```bash
+aws ecr describe-repositories
+
+aws ecr describe-images --repository-name bankcloud/frontend
+
+aws ecr describe-images --repository-name bankcloud/productcatalogservice
+```
+
+### Resultado
+
+Se publicaron correctamente las siguientes imágenes:
+
+| Imagen | Estado |
+|---------|:------:|
+| bankcloud/frontend:latest | ✅ |
+| bankcloud/productcatalogservice:latest | ✅ |
+
+Las imágenes quedaron almacenadas correctamente en Amazon ECR y listas para ser utilizadas por Amazon ECS Fargate.
+
+---
+
+## Estado Sprint 2
+
+| Actividad | Estado |
+|-----------|:------:|
+| Dockerfile Frontend | ✅ |
+| Dockerfile Backend | ✅ |
+| Multi-Stage Build | ✅ |
+| Usuario no root | ✅ |
+| Health Checks | ✅ |
+| Optimización de imágenes | ✅ |
+| Docker Compose | ✅ |
+| Amazon ECR | ✅ |
+| Build Frontend | ✅ |
+| Build Backend | ✅ |
+| Push Frontend | ✅ |
+| Push Backend | ✅ |
+
+**Sprint 2: COMPLETADO ✅**
+
 ---
 
 # 📅 Roadmap
 
 | Sprint | Objetivo | Estado |
-|---------|----------|--------|
-| Sprint 1 | Arquitectura y Networking | 🟡 80% |
-| Sprint 2 | Docker y Amazon ECR | ⚪ |
-| Sprint 3 | ECS Fargate y ALB | ⚪ |
-| Sprint 4 | Amazon RDS | ⚪ |
-| Sprint 5 | GitHub Actions CI/CD | ⚪ |
-| Sprint 6 | Observabilidad | ⚪ |
-| Sprint 7 | Seguridad | ⚪ |
-| Sprint 8 | Alta Disponibilidad y DR | ⚪ |
+|---------|----------|:------:|
+| Sprint 1 | Arquitectura y Networking | ✅ |
+| Sprint 2 | Contenedores y Amazon ECR | ✅ |
+| Sprint 3 | Amazon ECS Fargate + Application Load Balancer | ⏳ |
+| Sprint 4 | Amazon RDS | ⏳ |
+| Sprint 5 | GitHub Actions CI/CD | ⏳ |
+| Sprint 6 | Observabilidad | ⏳ |
+| Sprint 7 | Seguridad | ⏳ |
+| Sprint 8 | Alta Disponibilidad y Disaster Recovery | ⏳ |
 
 ---
 
-# 🚀 Próximos pasos
+# 🚀 Próximo Sprint
 
-- Finalizar Backend Remoto (S3 + DynamoDB).
-- Integrar el ambiente **dev**.
-- Completar documentación técnica.
-- Ejecutar despliegue completo desde cero.
-- Publicar evidencias del Sprint 1.
+## Sprint 3 – Amazon ECS Fargate
+
+### Objetivos
+
+- Crear Amazon ECS Cluster.
+- Crear Task Definitions.
+- Crear ECS Services.
+- Configurar Application Load Balancer.
+- Configurar Target Groups.
+- Configurar CloudWatch Logs.
+- Configurar Auto Scaling.
+- Desplegar los microservicios utilizando Terraform.
 
 ---
 
-# 👨‍💻 Autor
+# 📈 Avance General
 
-**Juan Sebastián Ferrer Bustos**
+| Sprint | Estado |
+|---------|:------:|
+| Sprint 1 | ✅ 100% |
+| Sprint 2 | ✅ 100% |
+| Sprint 3 | ⏳ |
+| Sprint 4 | ⏳ |
+| Sprint 5 | ⏳ |
+| Sprint 6 | ⏳ |
+| Sprint 7 | ⏳ |
+| Sprint 8 | ⏳ |
 
-Ingeniero Electrónico
+**Avance del proyecto: 25%**
+---
 
-Especialista en Seguridad Informática
-
-AWS Certified Solutions Architect • Terraform • DevOps • Cloud Engineer
