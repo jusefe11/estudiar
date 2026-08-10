@@ -17,3 +17,20 @@ module "ecr" {
 
 }
 
+module "ecs" {
+
+  source = "../../modules/ecs"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+}
+
+module "cloudwatch" {
+
+  source = "../../modules/cloudwatch"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+}
