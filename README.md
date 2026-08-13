@@ -339,7 +339,7 @@ Las imágenes quedaron almacenadas correctamente en Amazon ECR y listas para ser
 
 ---
 
-# 📈 Avance General
+# 📈 Avance General jajajaj
 
 | Sprint | Estado |
 |---------|:------:|
