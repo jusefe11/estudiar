@@ -1,20 +1,35 @@
-name: CI Pipeline
+name: BankCloud CI
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  validate:
+  terraform:
+
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: terraform/environments/dev
+
     steps:
-      - name: Checkout del código
+
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Mostrar mensaje
-        run: echo "Pipeline iniciado correctamente"
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Format
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan
