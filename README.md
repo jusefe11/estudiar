@@ -13,7 +13,7 @@
 
 **BankCloud** es un laboratorio práctico de nivel profesional enfocado en el diseño, implementación y automatización de una plataforma empresarial sobre AWS utilizando **Terraform** e **Infrastructure as Code (IaC)**.
 
-El proyecto simula la infraestructura tecnológica de una entidad financiera implementando redes, seguridad, contenedores, almacenamiento, monitoreo, despliegues automatizados y servicios administrados siguiendo las mejores prácticas del **AWS Well-Architected Framework**.
+El proyectow simula la infraestructura tecnológica de una entidad financiera implementando redes, seguridad, contenedores, almacenamiento, monitoreo, despliegues automatizados y servicios administrados siguiendo las mejores prácticas del **AWS Well-Architected Framework**.
 
 El objetivo es construir un proyecto completamente reproducible desde cero que sirva como portafolio profesional para cargos como:
 
