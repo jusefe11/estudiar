@@ -24,6 +24,20 @@ module "ecs" {
   project_name = var.project_name
   environment  = var.environment
 
+  execution_role_arn = module.iam.execution_role_arn
+  task_role_arn      = module.iam.task_role_arn
+
+  frontend_repository_url       = module.ecr.frontend_repository_url
+  productcatalog_repository_url = module.ecr.productcatalog_repository_url
+
+  private_subnets = module.vpc.private_subnet_ids
+
+  ecs_security_group_id = module.vpc.ecs_security_group_id
+
+  frontend_target_group_arn = module.alb.frontend_target_group_arn
+
+  productcatalog_target_group_arn = module.alb.productcatalog_target_group_arn
+
 }
 
 module "cloudwatch" {
@@ -44,3 +58,40 @@ module "iam" {
 
 }
 
+module "alb" {
+
+  source = "../../modules/alb"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  vpc_id                = module.vpc.vpc_id
+  public_subnets        = module.vpc.public_subnet_ids
+  alb_security_group_id = module.vpc.alb_security_group_id
+}
+
+module "cloudmap" {
+
+  source = "../../modules/cloudmap"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  vpc_id = module.vpc.vpc_id
+
+}
+
+module "rds" {
+
+  source = "../../modules/rds"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  vpc_id = module.vpc.vpc_id
+
+  database_subnets = module.vpc.database_subnet_ids
+
+  ecs_security_group_id = module.vpc.ecs_security_group_id
+
+}
