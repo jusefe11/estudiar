@@ -5,8 +5,9 @@ on:
     branches:
       - develop
 
-jobs:
+  workflow_dispatch:
 
+jobs:
   terraform:
 
     name: Terraform DEV
