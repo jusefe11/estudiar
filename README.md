@@ -1,4 +1,4 @@
-# 🚀 BankCloud - Enterprise AWS DevOps Platform
+# 🚀 BankCloud - Enterprise AWS DevOps Platform--juna ferrer jxjxjxjx
 
 ![AWS](https://img.shields.io/badge/AWS-Cloud-orange?logo=amazonaws)
 ![Terraform](https://img.shields.io/badge/Terraform-IaC-623CE4?logo=terraform)
@@ -339,7 +339,7 @@ Las imágenes quedaron almacenadas correctamente en Amazon ECR y listas para ser
 
 ---
 
-# 📈 Avance General
+# 📈 Avance General jajajaj
 
 | Sprint | Estado |
 |---------|:------:|
