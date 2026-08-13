@@ -1,27 +1,30 @@
-name: Terraform DEV
+name: Proyecto
 
 on:
-  push:
-    branches:
-      - develop
-
   workflow_dispatch:
-
-jobs:
-
+    inputs:
+      environment:
+        description: "Seleccione el ambiente"
+        required: true
+        default: DEV
+        type: choice
+        options:
+          - DEV
+          - QA
+          - PROD
 
 jobs:
   terraform:
 
-    name: Terraform DEV
+    name: Terraform
 
     runs-on: ubuntu-latest
 
-    environment: DEV
-#jaja111
+    environment: ${{ github.event.inputs.environment }}
+
     defaults:
       run:
-        working-directory: terraform/environments/dev
+        working-directory: terraform/environments/${{ lower(github.event.inputs.environment) }}
 
     steps:
 
@@ -40,6 +43,11 @@ jobs:
         with:
           terraform_version: 1.15.8
 
+      - name: Show Environment
+        run: |
+          echo "Ambiente seleccionado: ${{ github.event.inputs.environment }}"
+          echo "Directorio: terraform/environments/${{ lower(github.event.inputs.environment) }}"
+
       - name: Terraform Init
         run: terraform init
 
@@ -51,4 +59,3 @@ jobs:
 
       - name: Terraform Plan
         run: terraform plan
-        #juan111111sdsdsqeqwe
