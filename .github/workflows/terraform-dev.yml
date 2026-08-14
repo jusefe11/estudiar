@@ -1,4 +1,4 @@
-name: Proyecto CI/CD
+name: BankCloud CI/CD
 
 on:
   workflow_dispatch:
@@ -23,9 +23,7 @@ jobs:
   # ==========================================================
 
   ci:
-
-    name: CI - Build and Security
-
+    name: CI - Build, Scan and Push
     runs-on: ubuntu-latest
 
     environment:
@@ -65,27 +63,25 @@ jobs:
 
 
       # ------------------------------------------------------
-      # 4. Build Frontend
-      # IMPORTANTE: ajustar ruta del Dockerfile si es diferente
+      # 4. Docker Build - Frontend
       # ------------------------------------------------------
 
       - name: Docker Build - Frontend
         run: |
           docker build \
             -t bankcloud/frontend:${{ github.sha }} \
-            ./frontend
+            ./bankcloud-app/frontend
 
 
       # ------------------------------------------------------
-      # 5. Build Product Catalog
-      # IMPORTANTE: ajustar ruta del Dockerfile si es diferente
+      # 5. Docker Build - ProductCatalogService
       # ------------------------------------------------------
 
       - name: Docker Build - ProductCatalogService
         run: |
           docker build \
             -t bankcloud/productcatalogservice:${{ github.sha }} \
-            ./productcatalogservice
+            ./bankcloud-app/productcatalogservice
 
 
       # ------------------------------------------------------
@@ -102,7 +98,7 @@ jobs:
 
 
       # ------------------------------------------------------
-      # 7. Security Scan - Product Catalog
+      # 7. Security Scan - ProductCatalogService
       # ------------------------------------------------------
 
       - name: Trivy Scan - ProductCatalogService
@@ -115,7 +111,7 @@ jobs:
 
 
       # ------------------------------------------------------
-      # 8. Tag + Push Frontend
+      # 8. Tag + Push Frontend → ECR
       # ------------------------------------------------------
 
       - name: Push Frontend to ECR
@@ -131,7 +127,7 @@ jobs:
 
 
       # ------------------------------------------------------
-      # 9. Tag + Push Product Catalog
+      # 9. Tag + Push ProductCatalogService → ECR
       # ------------------------------------------------------
 
       - name: Push ProductCatalogService to ECR
@@ -147,15 +143,15 @@ jobs:
 
 
   # ==========================================================
-  # CD / INFRASTRUCTURE
+  # CD - TERRAFORM / INFRASTRUCTURE
   # ==========================================================
 
   terraform:
-
-    name: Terraform - ${{ github.event.inputs.environment }}
+    name: CD - Terraform - ${{ github.event.inputs.environment }}
 
     runs-on: ubuntu-latest
 
+    # Terraform solo se ejecuta si CI termina correctamente
     needs: ci
 
     environment:
@@ -178,7 +174,7 @@ jobs:
 
 
       # ------------------------------------------------------
-      # 11. Seleccionar ambiente
+      # 11. Seleccionar ambiente Terraform
       # ------------------------------------------------------
 
       - name: Seleccionar directorio Terraform
@@ -204,12 +200,13 @@ jobs:
 
 
       # ------------------------------------------------------
-      # 12. Mostrar ambiente
+      # 12. Información del despliegue
       # ------------------------------------------------------
 
       - name: Mostrar ambiente
         run: |
           echo "========================================"
+          echo "Proyecto: BankCloud"
           echo "Ambiente: ${{ github.event.inputs.environment }}"
           echo "Directorio Terraform: $TF_DIR"
           echo "Commit: ${{ github.sha }}"
@@ -296,7 +293,8 @@ jobs:
       - name: Deployment Completed
         run: |
           echo "========================================"
-          echo "CI/CD completado"
+          echo "CI/CD COMPLETADO"
+          echo "Proyecto: BankCloud"
           echo "Ambiente: ${{ github.event.inputs.environment }}"
           echo "Commit: ${{ github.sha }}"
           echo "========================================"
