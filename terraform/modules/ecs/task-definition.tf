@@ -3,8 +3,7 @@ resource "aws_ecs_task_definition" "frontend" {
   family = "${var.project_name}-${var.environment}-frontend"
 
   requires_compatibilities = ["FARGATE"]
-
-  network_mode = "awsvpc"
+  network_mode             = "awsvpc"
 
   cpu    = 256
   memory = 512
@@ -15,7 +14,7 @@ resource "aws_ecs_task_definition" "frontend" {
   container_definitions = jsonencode([
     {
       name      = "frontend"
-      image     = "${var.frontend_repository_url}:latest"
+      image     = "${var.frontend_repository_url}:${var.image_tag}"
       essential = true
 
       environment = [
@@ -46,13 +45,13 @@ resource "aws_ecs_task_definition" "frontend" {
   ])
 }
 
+
 resource "aws_ecs_task_definition" "productcatalogservice" {
 
   family = "${var.project_name}-${var.environment}-productcatalogservice"
 
   requires_compatibilities = ["FARGATE"]
-
-  network_mode = "awsvpc"
+  network_mode             = "awsvpc"
 
   cpu    = 512
   memory = 1024
@@ -63,7 +62,7 @@ resource "aws_ecs_task_definition" "productcatalogservice" {
   container_definitions = jsonencode([
     {
       name      = "productcatalogservice"
-      image     = "${var.productcatalog_repository_url}:latest"
+      image     = "${var.productcatalog_repository_url}:${var.image_tag}"
       essential = true
 
       portMappings = [

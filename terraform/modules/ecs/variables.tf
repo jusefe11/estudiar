@@ -45,3 +45,9 @@ variable "productcatalog_target_group_arn" {
   description = "Target Group Backend"
   type        = string
 }
+
+variable "image_tag" {
+  description = "Tag de las imagenes Docker desplegadas en ECS"
+  type        = string
+  default     = "latest"
+}

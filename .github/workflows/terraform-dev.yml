@@ -111,7 +111,7 @@ jobs:
 
 
       # ------------------------------------------------------
-      # 8. Tag + Push Frontend → ECR
+      # 8. Push Frontend -> ECR
       # ------------------------------------------------------
 
       - name: Push Frontend to ECR
@@ -127,7 +127,7 @@ jobs:
 
 
       # ------------------------------------------------------
-      # 9. Tag + Push ProductCatalogService → ECR
+      # 9. Push ProductCatalogService -> ECR
       # ------------------------------------------------------
 
       - name: Push ProductCatalogService to ECR
@@ -143,7 +143,7 @@ jobs:
 
 
   # ==========================================================
-  # CD - TERRAFORM / INFRASTRUCTURE
+  # CD - TERRAFORM / ECS
   # ==========================================================
 
   terraform:
@@ -151,7 +151,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # Terraform solo se ejecuta si CI termina correctamente
+    # CD solamente comienza si CI terminó correctamente
     needs: ci
 
     environment:
@@ -209,7 +209,7 @@ jobs:
           echo "Proyecto: BankCloud"
           echo "Ambiente: ${{ github.event.inputs.environment }}"
           echo "Directorio Terraform: $TF_DIR"
-          echo "Commit: ${{ github.sha }}"
+          echo "Image Tag: ${{ github.sha }}"
           echo "========================================"
 
 
@@ -264,6 +264,7 @@ jobs:
 
       # ------------------------------------------------------
       # 18. Terraform Plan
+      # IMPORTANTE: pasamos el SHA como image_tag
       # ------------------------------------------------------
 
       - name: Terraform Plan
@@ -271,6 +272,7 @@ jobs:
           terraform -chdir=$TF_DIR plan \
             -input=false \
             -lock-timeout=5m \
+            -var="image_tag=${{ github.sha }}" \
             -out=tfplan
 
 
@@ -296,5 +298,5 @@ jobs:
           echo "CI/CD COMPLETADO"
           echo "Proyecto: BankCloud"
           echo "Ambiente: ${{ github.event.inputs.environment }}"
-          echo "Commit: ${{ github.sha }}"
+          echo "Image Tag: ${{ github.sha }}"
           echo "========================================"
