@@ -288,8 +288,72 @@ jobs:
             tfplan
 
 
+            # ------------------------------------------------------
+      # 20. Esperar estabilidad de ECS
       # ------------------------------------------------------
-      # 20. Resultado
+
+      - name: Wait for ECS Services Stable
+        run: |
+          echo "Esperando que ECS termine el deployment..."
+
+          aws ecs wait services-stable \
+            --cluster bankcloud-dev \
+            --services \
+              bankcloud-dev-frontend \
+              bankcloud-dev-productcatalogservice \
+            --region $AWS_REGION
+
+          echo "ECS estable"
+
+
+      # ------------------------------------------------------
+      # 21. Verificar servicios ECS
+      # ------------------------------------------------------
+
+      - name: Verify ECS Services
+        run: |
+          aws ecs describe-services \
+            --cluster bankcloud-dev \
+            --services \
+              bankcloud-dev-frontend \
+              bankcloud-dev-productcatalogservice \
+            --region $AWS_REGION \
+            --query "services[].{Service:serviceName,Desired:desiredCount,Running:runningCount,Pending:pendingCount}" \
+            --output table
+
+
+      # ------------------------------------------------------
+      # 22. Smoke Test
+      # ------------------------------------------------------
+
+      - name: Smoke Test
+        run: |
+          echo "Obteniendo DNS del ALB..."
+
+          ALB_DNS=$(aws elbv2 describe-load-balancers \
+            --names bankcloud-dev-alb \
+            --region $AWS_REGION \
+            --query "LoadBalancers[0].DNSName" \
+            --output text)
+
+          echo "ALB: $ALB_DNS"
+          echo "Probando http://$ALB_DNS/_healthz"
+
+          curl \
+            --fail \
+            --show-error \
+            --silent \
+            --retry 5 \
+            --retry-delay 10 \
+            --retry-all-errors \
+            "http://$ALB_DNS/_healthz"
+
+          echo ""
+          echo "Smoke Test PASSED"
+
+
+      # ------------------------------------------------------
+      # 23. Resultado
       # ------------------------------------------------------
 
       - name: Deployment Completed
@@ -299,4 +363,6 @@ jobs:
           echo "Proyecto: BankCloud"
           echo "Ambiente: ${{ github.event.inputs.environment }}"
           echo "Image Tag: ${{ github.sha }}"
+          echo "ECS Deployment: OK"
+          echo "Smoke Test: OK"
           echo "========================================"
