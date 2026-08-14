@@ -14,9 +14,10 @@ on:
           - PROD
 
 jobs:
+
   terraform:
 
-    name: Terraform
+    name: Terraform - ${{ github.event.inputs.environment }}
 
     runs-on: ubuntu-latest
 
@@ -29,23 +30,52 @@ jobs:
 
     steps:
 
+      # ==========================================
+      # 1. Checkout
+      # ==========================================
+
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          submodules: false
+
+
+      # ==========================================
+      # 2. Seleccionar ambiente
+      # ==========================================
 
       - name: Seleccionar directorio Terraform
         run: |
           if [ "${{ github.event.inputs.environment }}" = "DEV" ]; then
-            echo "TF_DIR=terraform/environments/dev" >> $GITHUB_ENV
+            echo "TF_DIR=terraform/environments/dev" >> "$GITHUB_ENV"
+
           elif [ "${{ github.event.inputs.environment }}" = "QA" ]; then
-            echo "TF_DIR=terraform/environments/qa" >> $GITHUB_ENV
+            echo "TF_DIR=terraform/environments/qa" >> "$GITHUB_ENV"
+
+          elif [ "${{ github.event.inputs.environment }}" = "PROD" ]; then
+            echo "TF_DIR=terraform/environments/prod" >> "$GITHUB_ENV"
+
           else
-            echo "TF_DIR=terraform/environments/prod" >> $GITHUB_ENV
+            echo "Ambiente no válido"
+            exit 1
           fi
+
+
+      # ==========================================
+      # 3. Información del despliegue
+      # ==========================================
 
       - name: Mostrar ambiente
         run: |
+          echo "========================================"
           echo "Ambiente: ${{ github.event.inputs.environment }}"
-          echo "Directorio: $TF_DIR"
+          echo "Directorio Terraform: $TF_DIR"
+          echo "========================================"
+
+
+      # ==========================================
+      # 4. AWS Credentials
+      # ==========================================
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -54,19 +84,75 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+
+      # ==========================================
+      # 5. Terraform
+      # ==========================================
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.15.8
 
+
+      # ==========================================
+      # 6. Terraform Init
+      # ==========================================
+
       - name: Terraform Init
-        run: terraform -chdir=$TF_DIR init
+        run: |
+          terraform -chdir=$TF_DIR init -input=false
+
+
+      # ==========================================
+      # 7. Terraform Format
+      # ==========================================
 
       - name: Terraform Format
-        run: terraform -chdir=$TF_DIR fmt -check -recursive
+        run: |
+          terraform -chdir=$TF_DIR fmt -check -recursive
+
+
+      # ==========================================
+      # 8. Terraform Validate
+      # ==========================================
 
       - name: Terraform Validate
-        run: terraform -chdir=$TF_DIR validate
+        run: |
+          terraform -chdir=$TF_DIR validate
+
+
+      # ==========================================
+      # 9. Terraform Plan
+      # ==========================================
 
       - name: Terraform Plan
-        run: terraform -chdir=$TF_DIR plan
+        run: |
+          terraform -chdir=$TF_DIR plan \
+            -input=false \
+            -lock-timeout=5m \
+            -out=tfplan
+
+
+      # ==========================================
+      # 10. Terraform Apply
+      # ==========================================
+
+      - name: Terraform Apply
+        run: |
+          terraform -chdir=$TF_DIR apply \
+            -input=false \
+            -auto-approve \
+            tfplan
+
+
+      # ==========================================
+      # 11. Resultado
+      # ==========================================
+
+      - name: Deployment Completed
+        run: |
+          echo "========================================"
+          echo "Terraform Apply completado"
+          echo "Ambiente: ${{ github.event.inputs.environment }}"
+          echo "========================================"
