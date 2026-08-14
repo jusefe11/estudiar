@@ -20,16 +20,32 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    environment: ${{ github.event.inputs.environment }}
+    environment:
+      name: ${{ github.event.inputs.environment }}
 
     defaults:
       run:
-        working-directory: terraform/environments/${{ lower(github.event.inputs.environment) }}
+        shell: bash
 
     steps:
 
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Seleccionar directorio Terraform
+        run: |
+          if [ "${{ github.event.inputs.environment }}" = "DEV" ]; then
+            echo "TF_DIR=terraform/environments/dev" >> $GITHUB_ENV
+          elif [ "${{ github.event.inputs.environment }}" = "QA" ]; then
+            echo "TF_DIR=terraform/environments/qa" >> $GITHUB_ENV
+          else
+            echo "TF_DIR=terraform/environments/prod" >> $GITHUB_ENV
+          fi
+
+      - name: Mostrar ambiente
+        run: |
+          echo "Ambiente: ${{ github.event.inputs.environment }}"
+          echo "Directorio: $TF_DIR"
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -43,19 +59,14 @@ jobs:
         with:
           terraform_version: 1.15.8
 
-      - name: Show Environment
-        run: |
-          echo "Ambiente seleccionado: ${{ github.event.inputs.environment }}"
-          echo "Directorio: terraform/environments/${{ lower(github.event.inputs.environment) }}"
-
       - name: Terraform Init
-        run: terraform init
+        run: terraform -chdir=$TF_DIR init
 
       - name: Terraform Format
-        run: terraform fmt -check -recursive
+        run: terraform -chdir=$TF_DIR fmt -check -recursive
 
       - name: Terraform Validate
-        run: terraform validate
+        run: terraform -chdir=$TF_DIR validate
 
       - name: Terraform Plan
-        run: terraform plan
+        run: terraform -chdir=$TF_DIR plan
