@@ -31,3 +31,9 @@ variable "database_subnets" {
   description = "Subredes para RDS"
   type        = list(string)
 }
+
+variable "image_tag" {
+  description = "Tag de las imagenes Docker para ECS"
+  type        = string
+  default     = "latest"
+}

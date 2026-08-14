@@ -24,6 +24,9 @@ module "ecs" {
   project_name = var.project_name
   environment  = var.environment
 
+  # Tag de la imagen Docker recibido desde el pipeline
+  image_tag = var.image_tag
+
   execution_role_arn = module.iam.execution_role_arn
   task_role_arn      = module.iam.task_role_arn
 
@@ -37,7 +40,6 @@ module "ecs" {
   frontend_target_group_arn = module.alb.frontend_target_group_arn
 
   productcatalog_target_group_arn = module.alb.productcatalog_target_group_arn
-
 }
 
 module "cloudwatch" {
@@ -95,3 +97,4 @@ module "rds" {
   ecs_security_group_id = module.vpc.ecs_security_group_id
 
 }
+
