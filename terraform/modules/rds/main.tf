@@ -5,7 +5,6 @@ resource "aws_kms_key" "rds" {
 }
 
 resource "aws_security_group" "rds" {
-
   name        = "${var.project_name}-${var.environment}-rds-sg"
   description = "Security Group for RDS"
   vpc_id      = var.vpc_id
@@ -30,7 +29,6 @@ resource "aws_security_group" "rds" {
 }
 
 resource "aws_db_subnet_group" "this" {
-
   name = "${var.project_name}-${var.environment}-db-subnet"
 
   subnet_ids = var.database_subnets
@@ -41,20 +39,15 @@ resource "aws_db_subnet_group" "this" {
 }
 
 resource "random_password" "db" {
-
   length  = 20
   special = true
-
 }
 
 resource "aws_secretsmanager_secret" "db" {
-
   name = "${var.project_name}-${var.environment}-db-secret"
-
 }
 
 resource "aws_secretsmanager_secret_version" "db" {
-
   secret_id = aws_secretsmanager_secret.db.id
 
   secret_string = jsonencode({
@@ -64,13 +57,9 @@ resource "aws_secretsmanager_secret_version" "db" {
     port     = aws_db_instance.postgres.port
     database = aws_db_instance.postgres.db_name
   })
-
 }
 
-
-
 resource "aws_db_instance" "postgres" {
-
   identifier = "${var.project_name}-${var.environment}-postgres"
 
   engine         = "postgres"
@@ -94,15 +83,15 @@ resource "aws_db_instance" "postgres" {
   storage_encrypted = true
   kms_key_id         = aws_kms_key.rds.arn
 
-  backup_retention_period = 7
-  backup_window           = "03:00-04:00"
-  maintenance_window      = "Sun:04:00-Sun:05:00"
+  # Free Tier
+  backup_retention_period = 1
+
+  backup_window      = "03:00-04:00"
+  maintenance_window = "Sun:04:00-Sun:05:00"
 
   skip_final_snapshot = true
-
   deletion_protection = false
-
-  apply_immediately = true
+  apply_immediately   = true
 
   tags = {
     Name = "${var.project_name}-${var.environment}-postgres"
@@ -110,7 +99,6 @@ resource "aws_db_instance" "postgres" {
 }
 
 resource "aws_db_parameter_group" "postgres" {
-
   name   = "${var.project_name}-${var.environment}-pg"
   family = "postgres17"
 
@@ -127,5 +115,4 @@ resource "aws_db_parameter_group" "postgres" {
   tags = {
     Name = "${var.project_name}-${var.environment}-pg"
   }
-
 }
