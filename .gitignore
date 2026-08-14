@@ -2,8 +2,13 @@
 **/.terraform/*
 *.tfstate
 *.tfstate.*
+
+# Ignorar archivos tfvars por seguridad
 *.tfvars
 *.tfvars.json
+
+# Excepción: permitir variables del ambiente DEV
+!terraform/environments/dev/terraform.tfvars
 
 # Mantener el lock file
 !.terraform.lock.hcl
