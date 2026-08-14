@@ -42,7 +42,7 @@ resource "aws_lb_target_group" "frontend" {
 
     enabled = true
 
-    path = "/"
+    path = "/_healthz"
 
     protocol = "HTTP"
 

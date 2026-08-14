@@ -275,6 +275,32 @@ jobs:
             -var="image_tag=${{ github.sha }}" \
             -out=tfplan
 
+            # ------------------------------------------------------
+      # Guardar versiones actuales para Rollback
+      # ------------------------------------------------------
+
+      - name: Save Current ECS Task Definitions
+        run: |
+          FRONTEND_PREVIOUS=$(aws ecs describe-services \
+            --cluster bankcloud-dev \
+            --services bankcloud-dev-frontend \
+            --region $AWS_REGION \
+            --query "services[0].taskDefinition" \
+            --output text)
+
+          PRODUCT_PREVIOUS=$(aws ecs describe-services \
+            --cluster bankcloud-dev \
+            --services bankcloud-dev-productcatalogservice \
+            --region $AWS_REGION \
+            --query "services[0].taskDefinition" \
+            --output text)
+
+          echo "FRONTEND_PREVIOUS=$FRONTEND_PREVIOUS" >> "$GITHUB_ENV"
+          echo "PRODUCT_PREVIOUS=$PRODUCT_PREVIOUS" >> "$GITHUB_ENV"
+
+          echo "Frontend anterior: $FRONTEND_PREVIOUS"
+          echo "ProductCatalog anterior: $PRODUCT_PREVIOUS"      
+
 
       # ------------------------------------------------------
       # 19. Terraform Apply
@@ -351,7 +377,37 @@ jobs:
           echo ""
           echo "Smoke Test PASSED"
 
+            # ------------------------------------------------------
+      # Rollback automático
+      # ------------------------------------------------------
 
+      - name: Rollback ECS
+        if: failure()
+        run: |
+          echo "Deployment fallido. Ejecutando rollback..."
+
+          aws ecs update-service \
+            --cluster bankcloud-dev \
+            --service bankcloud-dev-frontend \
+            --task-definition "$FRONTEND_PREVIOUS" \
+            --region $AWS_REGION
+
+          aws ecs update-service \
+            --cluster bankcloud-dev \
+            --service bankcloud-dev-productcatalogservice \
+            --task-definition "$PRODUCT_PREVIOUS" \
+            --region $AWS_REGION
+
+          echo "Esperando estabilización después del rollback..."
+
+          aws ecs wait services-stable \
+            --cluster bankcloud-dev \
+            --services \
+              bankcloud-dev-frontend \
+              bankcloud-dev-productcatalogservice \
+            --region $AWS_REGION
+
+          echo "ROLLBACK COMPLETADO" 
       # ------------------------------------------------------
       # 23. Resultado
       # ------------------------------------------------------
