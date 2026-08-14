@@ -1,4 +1,4 @@
-name: Proyecto
+name: Proyecto CI/CD
 
 on:
   workflow_dispatch:
@@ -13,13 +13,150 @@ on:
           - QA
           - PROD
 
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+
 jobs:
+
+  # ==========================================================
+  # CI - CONTINUOUS INTEGRATION
+  # ==========================================================
+
+  ci:
+
+    name: CI - Build and Security
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: ${{ github.event.inputs.environment }}
+
+    steps:
+
+      # ------------------------------------------------------
+      # 1. Checkout
+      # ------------------------------------------------------
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+
+      # ------------------------------------------------------
+      # 2. AWS Credentials
+      # ------------------------------------------------------
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+
+      # ------------------------------------------------------
+      # 3. Login Amazon ECR
+      # ------------------------------------------------------
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+
+      # ------------------------------------------------------
+      # 4. Build Frontend
+      # IMPORTANTE: ajustar ruta del Dockerfile si es diferente
+      # ------------------------------------------------------
+
+      - name: Docker Build - Frontend
+        run: |
+          docker build \
+            -t bankcloud/frontend:${{ github.sha }} \
+            ./frontend
+
+
+      # ------------------------------------------------------
+      # 5. Build Product Catalog
+      # IMPORTANTE: ajustar ruta del Dockerfile si es diferente
+      # ------------------------------------------------------
+
+      - name: Docker Build - ProductCatalogService
+        run: |
+          docker build \
+            -t bankcloud/productcatalogservice:${{ github.sha }} \
+            ./productcatalogservice
+
+
+      # ------------------------------------------------------
+      # 6. Security Scan - Frontend
+      # ------------------------------------------------------
+
+      - name: Trivy Scan - Frontend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: bankcloud/frontend:${{ github.sha }}
+          format: table
+          exit-code: "1"
+          severity: "CRITICAL,HIGH"
+
+
+      # ------------------------------------------------------
+      # 7. Security Scan - Product Catalog
+      # ------------------------------------------------------
+
+      - name: Trivy Scan - ProductCatalogService
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: bankcloud/productcatalogservice:${{ github.sha }}
+          format: table
+          exit-code: "1"
+          severity: "CRITICAL,HIGH"
+
+
+      # ------------------------------------------------------
+      # 8. Tag + Push Frontend
+      # ------------------------------------------------------
+
+      - name: Push Frontend to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker tag \
+            bankcloud/frontend:${{ github.sha }} \
+            $ECR_REGISTRY/bankcloud/frontend:${{ github.sha }}
+
+          docker push \
+            $ECR_REGISTRY/bankcloud/frontend:${{ github.sha }}
+
+
+      # ------------------------------------------------------
+      # 9. Tag + Push Product Catalog
+      # ------------------------------------------------------
+
+      - name: Push ProductCatalogService to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker tag \
+            bankcloud/productcatalogservice:${{ github.sha }} \
+            $ECR_REGISTRY/bankcloud/productcatalogservice:${{ github.sha }}
+
+          docker push \
+            $ECR_REGISTRY/bankcloud/productcatalogservice:${{ github.sha }}
+
+
+  # ==========================================================
+  # CD / INFRASTRUCTURE
+  # ==========================================================
 
   terraform:
 
     name: Terraform - ${{ github.event.inputs.environment }}
 
     runs-on: ubuntu-latest
+
+    needs: ci
 
     environment:
       name: ${{ github.event.inputs.environment }}
@@ -30,9 +167,9 @@ jobs:
 
     steps:
 
-      # ==========================================
-      # 1. Checkout
-      # ==========================================
+      # ------------------------------------------------------
+      # 10. Checkout
+      # ------------------------------------------------------
 
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -40,42 +177,48 @@ jobs:
           submodules: false
 
 
-      # ==========================================
-      # 2. Seleccionar ambiente
-      # ==========================================
+      # ------------------------------------------------------
+      # 11. Seleccionar ambiente
+      # ------------------------------------------------------
 
       - name: Seleccionar directorio Terraform
         run: |
           if [ "${{ github.event.inputs.environment }}" = "DEV" ]; then
+
             echo "TF_DIR=terraform/environments/dev" >> "$GITHUB_ENV"
 
           elif [ "${{ github.event.inputs.environment }}" = "QA" ]; then
+
             echo "TF_DIR=terraform/environments/qa" >> "$GITHUB_ENV"
 
           elif [ "${{ github.event.inputs.environment }}" = "PROD" ]; then
+
             echo "TF_DIR=terraform/environments/prod" >> "$GITHUB_ENV"
 
           else
+
             echo "Ambiente no válido"
             exit 1
+
           fi
 
 
-      # ==========================================
-      # 3. Información del despliegue
-      # ==========================================
+      # ------------------------------------------------------
+      # 12. Mostrar ambiente
+      # ------------------------------------------------------
 
       - name: Mostrar ambiente
         run: |
           echo "========================================"
           echo "Ambiente: ${{ github.event.inputs.environment }}"
           echo "Directorio Terraform: $TF_DIR"
+          echo "Commit: ${{ github.sha }}"
           echo "========================================"
 
 
-      # ==========================================
-      # 4. AWS Credentials
-      # ==========================================
+      # ------------------------------------------------------
+      # 13. AWS Credentials
+      # ------------------------------------------------------
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -85,9 +228,9 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
 
-      # ==========================================
-      # 5. Terraform
-      # ==========================================
+      # ------------------------------------------------------
+      # 14. Setup Terraform
+      # ------------------------------------------------------
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -95,36 +238,36 @@ jobs:
           terraform_version: 1.15.8
 
 
-      # ==========================================
-      # 6. Terraform Init
-      # ==========================================
+      # ------------------------------------------------------
+      # 15. Terraform Init
+      # ------------------------------------------------------
 
       - name: Terraform Init
         run: |
           terraform -chdir=$TF_DIR init -input=false
 
 
-      # ==========================================
-      # 7. Terraform Format
-      # ==========================================
+      # ------------------------------------------------------
+      # 16. Terraform Format
+      # ------------------------------------------------------
 
       - name: Terraform Format
         run: |
           terraform -chdir=$TF_DIR fmt -check -recursive
 
 
-      # ==========================================
-      # 8. Terraform Validate
-      # ==========================================
+      # ------------------------------------------------------
+      # 17. Terraform Validate
+      # ------------------------------------------------------
 
       - name: Terraform Validate
         run: |
           terraform -chdir=$TF_DIR validate
 
 
-      # ==========================================
-      # 9. Terraform Plan
-      # ==========================================
+      # ------------------------------------------------------
+      # 18. Terraform Plan
+      # ------------------------------------------------------
 
       - name: Terraform Plan
         run: |
@@ -134,9 +277,9 @@ jobs:
             -out=tfplan
 
 
-      # ==========================================
-      # 10. Terraform Apply
-      # ==========================================
+      # ------------------------------------------------------
+      # 19. Terraform Apply
+      # ------------------------------------------------------
 
       - name: Terraform Apply
         run: |
@@ -146,13 +289,14 @@ jobs:
             tfplan
 
 
-      # ==========================================
-      # 11. Resultado
-      # ==========================================
+      # ------------------------------------------------------
+      # 20. Resultado
+      # ------------------------------------------------------
 
       - name: Deployment Completed
         run: |
           echo "========================================"
-          echo "Terraform Apply completado"
+          echo "CI/CD completado"
           echo "Ambiente: ${{ github.event.inputs.environment }}"
+          echo "Commit: ${{ github.sha }}"
           echo "========================================"
