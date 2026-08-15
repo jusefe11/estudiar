@@ -1,44 +1,48 @@
-BankCloud – Plataforma Empresarial AWS DevOps
+☁️ BankCloud – Plataforma Empresarial AWS DevOps
+
+Laboratorio práctico de nivel profesional para diseñar, automatizar, desplegar y operar una plataforma empresarial sobre AWS utilizando Terraform, Docker, Amazon ECS Fargate y GitHub Actions.
 
 📖 Descripción
 
-BankCloud es un laboratorio práctico de nivel profesional enfocado en el diseño, implementación, automatización y operación de una plataforma empresarial sobre Amazon Web Services (AWS) utilizando Terraform, Docker, Amazon ECS Fargate y GitHub Actions .
+BankCloud simula la modernización de una plataforma tecnológica empresarial hacia AWS mediante una arquitectura basada en:
 
-El proyecto simula la modernización de una plataforma tecnológica empresarial mediante una arquitectura Cloud basada en Infrastructure as Code (IaC) , contenedores, microservicios, redes privadas, balanceo de carga, bases de datos administradas, seguridad, observabilidad y automatización CI/CD.
+Infrastructure as Code (IaC)
 
-La infraestructura está diseñada siguiendo principios de:
+Contenedores y microservicios
 
-Infraestructura como código
+Networking público, privado y de base de datos
 
-DevOps
+Balanceo de carga
 
-DevSecOps
-
-Automatización
-
-Alta disponibilidad
+Bases de datos administradas
 
 Seguridad por capas
+
+Observabilidad
+
+Automatización CI/CD
+
+Alta disponibilidad
 
 Separación por ambientes
 
 AWS Well-Architected Framework
 
-El proyecto está orientado a demostrar competencias para roles como:
+🎯 Roles y competencias demostradas
 
-Ingeniero Cloud
+Cloud Engineer
 
-Ingeniero DevOps
+DevOps Engineer
 
-Ingeniero DevSecOps
+DevSecOps Engineer
 
-Arquitecto de Soluciones AWS
+AWS Solutions Architect
 
-Ingeniero de Plataforma
+Platform Engineer
 
-Ingeniero de Infraestructura Cloud
+Cloud Infrastructure Engineer
 
-🎯 Objetivos
+🎯 Objetivos del proyecto
 
 Diseñar una arquitectura empresarial sobre AWS.
 
@@ -52,11 +56,11 @@ Containerizar microservicios con Docker.
 
 Publicar imágenes en Amazon ECR.
 
-Ejecutar cargas de trabajo mediante Amazon ECS Fargate.
+Ejecutar workloads mediante Amazon ECS Fargate.
 
-Implementar un balanceador de carga de aplicaciones.
+Implementar Application Load Balancer y Target Groups.
 
-Implementar el descubrimiento de servicios.
+Implementar Service Discovery con AWS Cloud Map.
 
 Implementar PostgreSQL mediante Amazon RDS.
 
@@ -68,135 +72,47 @@ Automatizar CI/CD mediante GitHub Actions.
 
 Ejecutar análisis de vulnerabilidades con Trivy.
 
-Implementar Chequeos de Salud y Pruebas de Humo.
+Implementar Health Checks y Smoke Tests.
 
 Implementar rollback automático.
 
-Incorporar observabilidad y monitoreo.
+Incorporar observabilidad con CloudWatch, Prometheus y Grafana.
 
 Implementar controles DevSecOps.
 
 Diseñar mecanismos de alta disponibilidad y recuperación.
 
-Mantener una plataforma completamente reproducible mediante código.
+Mantener una plataforma reproducible mediante código.
 
-🛠 Tecnologías
+🛠 Stack tecnológico
+
+Área
+
+Tecnologías
 
 ☁️ AWS
 
-Amazon VPC
+VPC, ECS, Fargate, ECR, ALB, RDS PostgreSQL, Secrets Manager, KMS, Cloud Map, CloudWatch, S3, DynamoDB, IAM, NAT Gateway, Internet Gateway, VPC Endpoints
 
-Amazon ECS
+🏗 IaC
 
-AWS Fargate
-
-Amazon ECR
-
-Application Load Balancer (ALB)
-
-Grupos objetivo
-
-Amazon RDS PostgreSQL
-
-AWS Secrets Manager
-
-AWS KMS
-
-Mapa de la nube de AWS
-
-Amazon CloudWatch
-
-Amazon S3
-
-Amazon DynamoDB
-
-AWS IAM
-
-NAT Gateway
-
-Internet Gateway
-
-VPC Endpoints
-
-Grupos de seguridad
-
-Network ACL (NACL)
-
-🏗 Infraestructura como código
-
-Terraform
-
-Terraform Modules
-
-Remote State
-
-Backend de Amazon S3
-
-State Locking
+Terraform, módulos reutilizables, Remote State en S3, State Locking
 
 🐳 Contenedores
 
-Docker
+Docker, Docker Compose, Multi-stage Builds, Amazon ECR
 
-Docker Compose
+🔄 CI/CD
 
-Multi-stage Builds
-
-Amazon ECR
-
-🔄 DevOps / CI/CD
-
-Git
-
-GitHub
-
-GitHub Actions
-
-Terraform
-
-Docker
-
-Amazon ECR
-
-Amazon ECS
+Git, GitHub, GitHub Actions, Terraform, Docker, ECR, ECS
 
 🔐 DevSecOps
 
-Trivy
-
-AWS IAM
-
-AWS KMS
-
-AWS Secrets Manager
-
-Grupos de seguridad
-
-Network ACL (NACL)
-
-VPC Endpoints
+Trivy, IAM, KMS, Secrets Manager, Security Groups, NACL, VPC Endpoints
 
 📊 Observabilidad
 
-Amazon CloudWatch
-
-CloudWatch Logs
-
-CloudWatch Metrics
-
-CloudWatch Alarms
-
-ECS Container Insights
-
-Prometheus
-
-Grafana
-
-Health Checks
-
-Application Load Balancer
-
-VPC Endpoint para CloudWatch Logs
+CloudWatch, CloudWatch Logs, CloudWatch Metrics, CloudWatch Alarms, ECS Container Insights, Prometheus, Grafana
 
 📂 Estructura del proyecto
 
@@ -211,20 +127,16 @@ estudiar/
 │   ├── frontend/
 │   │   ├── Dockerfile
 │   │   └── main.go
-│   │
 │   ├── productcatalogservice/
 │   │   └── Dockerfile
-│   │
 │   └── docker-compose.yml
 │
 ├── terraform/
 │   ├── bootstrap/
-│   │
 │   ├── environments/
 │   │   ├── dev/
 │   │   ├── qa/
 │   │   └── prod/
-│   │
 │   └── modules/
 │       ├── alb/
 │       ├── cloudmap/
@@ -238,7 +150,6 @@ estudiar/
 │
 └── README.md
 
-
 🏗 Arquitectura actual
 
                             INTERNET
@@ -249,58 +160,50 @@ estudiar/
                      └────────┬─────────┘
                               │
                               ▼
-                  ┌───────────────────────┐
-                  │      Amazon VPC       │
-                  │      bankcloud        │
-                  └───────────┬───────────┘
+                     ┌──────────────────┐
+                     │    Amazon VPC    │
+                     │    BankCloud     │
+                     └────────┬─────────┘
                               │
              ┌────────────────┴────────────────┐
              │                                 │
              ▼                                 ▼
       PUBLIC SUBNETS                    PRIVATE SUBNETS
              │                                 │
-             ▼                                 │
-    Application Load                           │
-        Balancer                               │
-             │                                 │
-             └──────────────┬──────────────────┘
-                            ▼
-                   ┌─────────────────┐
-                   │   ECS Fargate   │
-                   │ bankcloud-dev   │
-                   └────────┬────────┘
-                            │
-              ┌─────────────┴─────────────┐
-              │                           │
-              ▼                           ▼
-       ┌────────────┐          ┌──────────────────────┐
-       │  Frontend  │  gRPC    │ ProductCatalog      │
-       │   :8080    │─────────▶│ Service :3550       │
-       └────────────┘          └──────────────────────┘
-              │                           │
-              │                   AWS Cloud Map
-              │
-              ▼
-       Target Groups
-              │
-              ▼
-       Health Checks
-        /_healthz
+             ▼                                 ▼
+     ┌───────────────┐                 ┌─────────────────┐
+     │      ALB      │────────────────▶│   ECS Fargate   │
+     └───────────────┘                 │  bankcloud-dev  │
+                                       └────────┬────────┘
+                                                │
+                              ┌─────────────────┴─────────────────┐
+                              │                                   │
+                              ▼                                   ▼
+                       ┌────────────┐                    ┌──────────────────┐
+                       │  Frontend  │       gRPC         │ ProductCatalog   │
+                       │   :8080    │───────────────────▶│ Service :3550    │
+                       └────────────┘                    └──────────────────┘
+                              │                                   │
+                              ▼                                   ▼
+                       Target Groups                       AWS Cloud Map
+                              │
+                              ▼
+                         Health Check
+                          /_healthz
 
-                 PRIVATE DATABASE SUBNETS
-                            │
-                            ▼
-                    ┌───────────────┐
-                    │ Amazon RDS    │
-                    │ PostgreSQL    │
-                    └───────────────┘
+                     PRIVATE DATABASE SUBNETS
+                              │
+                              ▼
+                     ┌──────────────────┐
+                     │    Amazon RDS    │
+                     │    PostgreSQL    │
+                     └──────────────────┘
 
-Additional Services:
+Servicios complementarios
 
 Amazon ECR
-   │
-   ├── bankcloud/frontend
-   └── bankcloud/productcatalogservice
+├── bankcloud/frontend
+└── bankcloud/productcatalogservice
 
 AWS Secrets Manager
 AWS KMS
@@ -309,63 +212,50 @@ Amazon S3
 Amazon DynamoDB
 VPC Endpoints
 
-
 🔄 Flujo CI/CD
 
 Developer
-    │
-    ▼
+   │
+   ▼
 Git / GitHub
-    │
-    ▼
+   │
+   ▼
 GitHub Actions
-    │
-    ├── Checkout
-    │
-    ├── AWS Authentication
-    │
-    ├── Docker Build
-    │
-    ├── Trivy Security Scan
-    │
-    ├── Push Amazon ECR
-    │
-    ├── Terraform Init
-    │
-    ├── Terraform Format
-    │
-    ├── Terraform Validate
-    │
-    ├── Terraform Plan
-    │
-    ├── Terraform Apply
-    │
-    ▼
+   │
+   ├── Checkout
+   ├── AWS Authentication
+   ├── Docker Build
+   ├── Trivy Security Scan
+   ├── Push → Amazon ECR
+   ├── Terraform Init
+   ├── Terraform Fmt
+   ├── Terraform Validate
+   ├── Terraform Plan
+   └── Terraform Apply
+   │
+   ▼
 Amazon ECS Fargate
-    │
-    ├── Wait Services Stable
-    ├── Verify ECS Services
-    │
-    ▼
+   │
+   ├── Wait Services Stable
+   └── Verify ECS Services
+   │
+   ▼
 Application Load Balancer
-    │
-    ▼
-Smoke Test
-/_healthz
-    │
-    ├── OK ───────▶ Deployment Completed
-    │
-    └── FAIL ─────▶ Automatic Rollback
+   │
+   ▼
+Smoke Test → /_healthz
+   │
+   ├── SUCCESS → Deployment Completed
+   └── FAILURE → Automatic Rollback
 
-
-Las imágenes Docker utilizan el SHA del commit de Git como etiqueta:
+Las imágenes Docker utilizan el SHA del commit de Git como tag:
 
 bankcloud/frontend:<commit-sha>
-
 bankcloud/productcatalogservice:<commit-sha>
 
+Esto permite identificar exactamente qué versión se encuentra desplegada en ECS y facilita el rollback.
 
-Esto permite identificar exactamente qué versión del código está ejecutándose en ECS y facilitar los procesos de rollback.
+📌 Sprints
 
 ✅ Sprint 1 – Arquitectura y Networking
 
@@ -373,13 +263,13 @@ Objetivo
 
 Construir la infraestructura base de AWS mediante Terraform utilizando una arquitectura modular, segura y reproducible.
 
-Recursos implementados
+Implementado
 
 ✅ Bootstrap Terraform
 
 ✅ Backend remoto en Amazon S3
 
-✅ Bloqueo de estado
+✅ State Locking
 
 ✅ VPC
 
@@ -389,23 +279,23 @@ Recursos implementados
 
 ✅ Subredes de base de datos
 
-✅ Puerta de enlace a Internet
+✅ Internet Gateway
 
-✅ IP elástica
+✅ Elastic IP
 
-✅ Puerta de enlace NAT
+✅ NAT Gateway
 
-✅ Tablas de ruta
+✅ Route Tables
 
-✅ Asociaciones de tablas de ruta
+✅ Route Table Associations
 
-✅ Lista de control de acceso (ACL) de red
+✅ Network ACL
 
-✅ Grupos de seguridad
+✅ Security Groups
 
-✅ Punto final VPC S3
+✅ VPC Endpoint para S3
 
-✅ Puntos finales de VPC para servicios AWS
+✅ VPC Endpoints para servicios AWS
 
 Validaciones
 
@@ -415,45 +305,31 @@ terraform validate
 terraform plan
 terraform apply
 
-Validación mediante AWS CLI:
-
 aws ec2 describe-vpcs
 aws ec2 describe-subnets
 aws ec2 describe-route-tables
 aws ec2 describe-internet-gateways
 aws ec2 describe-nat-gateways
 
-Resultado
-
-Infraestructura creada mediante Terraform.
-
-Remote State almacenado en Amazon S3.
-
-Control de concurrencia del estado.
-
-Networking público, privado y de base de datos.
-
-Infraestructura modular y reproducible.
-
-Sprint 1: COMPLETADO ✅
+Estado: COMPLETADO ✅
 
 ✅ Sprint 2 – Docker y Amazon ECR
 
 Objetivo
 
-Containerizar los microservicios utilizando Docker, aplicar buenas prácticas y almacenar las imágenes en Amazon ECR.
+Containerizar los microservicios, aplicar buenas prácticas y almacenar las imágenes en Amazon ECR.
 
-Implementación
+Implementado
 
 ✅ Dockerfile Frontend
 
 ✅ Dockerfile ProductCatalogService
 
-✅ Construcción en varias etapas
+✅ Multi-stage Builds
 
 ✅ Usuario no root
 
-✅ Chequeos médicos
+✅ Health Checks
 
 ✅ Optimización de imágenes
 
@@ -463,126 +339,96 @@ Implementación
 
 ✅ Build de imágenes
 
-✅ Empujar hacia ECR
+✅ Push a ECR
 
-Repositorios ECR
+Repositorios
 
 bankcloud/frontend
 bankcloud/productcatalogservice
 
-
-Validación
-
-aws ecr describe-repositories
-
-aws ecr describe-images \
-  --repository-name bankcloud/frontend
-
-aws ecr describe-images \
-  --repository-name bankcloud/productcatalogservice
-
-Sprint 2: COMPLETADO ✅
+Estado: COMPLETADO ✅
 
 ✅ Sprint 3 – Amazon ECS Fargate + ALB
 
 Objetivo
 
-Desplegar los microservicios sobre una plataforma de contenedores administrada utilizando Amazon ECS Fargate.
+Desplegar los microservicios sobre Amazon ECS Fargate con balanceo de carga y Service Discovery.
 
-Implementación
+Implementado
 
-✅ Clúster ECSbankcloud-dev
+✅ ECS Cluster bankcloud-dev
 
-✅ Definiciones de tareas de ECS
+✅ ECS Task Definitions
 
-✅ Servicios ECS
+✅ ECS Services
 
 ✅ AWS Fargate
 
-✅ Balanceador de carga de aplicaciones
+✅ Application Load Balancer
 
-✅ Grupos objetivo
+✅ Target Groups
 
-✅ Grupos de seguridad
+✅ Security Groups
 
-✅ Registros de CloudWatch
+✅ CloudWatch Logs
 
-✅ Mapa de la nube de AWS
+✅ AWS Cloud Map
 
-✅ Descubrimiento de servicios
+✅ Service Discovery
 
-✅ Redes privadas
+✅ Networking privado
 
-✅ Chequeos médicos
+✅ Health Checks
 
-✅ Actualización continua de Despliegue
+✅ Rolling Deployments
 
 Servicios
 
 bankcloud-dev-frontend
-bankcloud-dev-productcatalogservice
-
-
-Estado esperado:
-
-Frontend
 Desired: 2
 Running: 2
 Rollout: COMPLETED
 
-ProductCatalogService
+bankcloud-dev-productcatalogservice
 Desired: 1
 Running: 1
 Rollout: COMPLETED
 
-
-Chequeo de salud
-
-El ALB verifica:
+Health Check
 
 /_healthz
-
-
-Resultado validado:
-
 HTTP/1.1 200 OK
-
 ok
 
-
-Sprint 3: COMPLETADO ✅
+Estado: COMPLETADO ✅
 
 ✅ Sprint 4 – Amazon RDS PostgreSQL
 
 Objetivo
 
-Implementar una capa de persistencia administrada y protegida dentro de las subredes privadas de base de datos.
+Implementar una capa de persistencia administrada y protegida dentro de subredes privadas de base de datos.
 
-Implementación
+Implementado
 
-✅ Amazon RDS
+✅ Amazon RDS PostgreSQL
 
-✅ PostgreSQL
-
-✅ Grupo de subredes de la base de datos
+✅ DB Subnet Group
 
 ✅ Subredes privadas de base de datos
 
-✅ Grupo de seguridad dedicado
+✅ Security Group dedicado
 
 ✅ Acceso controlado desde ECS
 
-✅ Administrador de secretos de AWS
+✅ AWS Secrets Manager
 
-✅ Generación segura de contraseña
+✅ Generación segura de contraseñas
 
 ✅ AWS KMS
 
-✅ Grupo de parámetros
+✅ Parameter Group
 
 ✅ Integración mediante Terraform
-
-Arquitectura
 
 ECS Fargate
      │
@@ -598,236 +444,106 @@ Amazon RDS PostgreSQL
      ├── Secrets Manager
      └── AWS KMS
 
-
-Sprint 4: COMPLETADO ✅
+Estado: COMPLETADO ✅
 
 🟡 Sprint 5 – GitHub Actions CI/CD
 
 Objetivo
 
-Construir un pipeline CI/CD empresarial para automatizar pruebas, seguridad, publicación de imágenes, infraestructura y despliegues.
+Construir un pipeline CI/CD empresarial para automatizar seguridad, publicación de imágenes, infraestructura y despliegues.
 
-Pipeline implementado
+Continuous Integration
 
-Integración continua
-
-✅ Checkout del repositorio
+✅ Checkout
 
 ✅ Autenticación AWS
 
-✅ Iniciar sesión en Amazon ECR
+✅ Login Amazon ECR
 
 ✅ Docker Build Frontend
 
 ✅ Docker Build ProductCatalogService
 
-✅ Interfaz de usuario de Trivy Scan
+✅ Trivy Scan
 
-✅ Servicio de catálogo de productos Trivy Scan
+✅ Bloqueo por vulnerabilidades HIGH/CRITICAL
 
-✅ Bloqueo por vulnerabilidades ALTA/CRÍTICA
+✅ Tag mediante Git Commit SHA
 
-✅ Etiqueta de imágenes mediante Git Commit SHA
+✅ Push a Amazon ECR
 
-✅ Empujar hacia Amazon ECR
-
-Despliegue continuo
+Continuous Deployment
 
 ✅ Selección de ambiente
 
-✅ Inicialización de Terraform
+✅ Terraform Init / Fmt / Validate / Plan / Apply
 
-✅ Formato Terraform
+✅ Actualización de ECS Task Definitions
 
-✅ Validación de Terraform
-
-✅ Plan de terraformación
-
-✅ Aplicar Terraform
-
-✅ Actualización de definiciones de tareas de ECS
-
-✅ Implementación ECS
+✅ Despliegue ECS
 
 ✅ Espera automática de estabilidad
 
 ✅ Verificación de servicios
 
-✅ Chequeos de salud del ALB
+✅ ALB Health Checks
 
-✅ Prueba de humo automática/_healthz
+✅ Smoke Test /_healthz
 
-✅ Pipeline completo ejecutado exitosamente
+✅ Pipeline ejecutado exitosamente
 
-✅ Implementación automática de reversión
+✅ Lógica de rollback automático
 
 🟡 Prueba controlada del rollback pendiente
 
-Flujo
-
-Git Commit
-     │
-     ▼
-GitHub Actions
-     │
-     ▼
-Docker Build
-     │
-     ▼
-Trivy
-     │
-     ▼
-Amazon ECR
-     │
-     ▼
-Terraform Plan
-     │
-     ▼
-Terraform Apply
-     │
-     ▼
-Amazon ECS
-     │
-     ▼
-Wait Services Stable
-     │
-     ▼
-Smoke Test
-     │
-     ├── SUCCESS → Deployment Completed
-     │
-     └── FAILURE → Automatic Rollback
-
-
 Evidencia funcional
 
-El pipeline fue ejecutado correctamente sobre DEV obteniendo:
-
 CI - Build, Scan and Push     SUCCESS
-
 CD - Terraform - DEV         SUCCESS
-
 ECS Deployment               OK
-
 Smoke Test                   OK
 
+Estado: 95% 🟡
 
-También se verificó manualmente:
-
-curl http://<ALB-DNS>/_healthz
-
-Resultado:
-
-HTTP/1.1 200 OK
-
-ok
-
-
-Estado
-
-Sprint 5: 95% 🟡
-
-Pendiente:
-
-Prueba controlada del rollback.
-
-Evidencia final del rollback.
-
-Cierre documental del Sprint.
-
-📅 Hoja de ruta
-
-SprintObjetivoEstado
-
-
-
-
-
-Sprint 1
-
-Arquitectura y redes
-
-✅ 100%
-
-Sprint 2
-
-Docker y Amazon ECR
-
-✅ 100%
-
-Sprint 3
-
-Amazon ECS Fargate + ALB
-
-✅ 100%
-
-Sprint 4
-
-Amazon RDS PostgreSQL
-
-✅ 100%
-
-Sprint 5
-
-GitHub Actions CI/CD
-
-🟡 95%
-
-Sprint 6
-
-Observabilidad
-
-✅ 100%
-
-Sprint 7
-
-Seguridad / DevSecOps
-
-⏳ Pendiente
-
-Sprint 8
-
-Alta Disponibilidad, DR y Solución de Problemas
-
-⏳ Pendiente
+Pendiente: ejecutar, evidenciar y documentar la prueba controlada del rollback.
 
 ✅ Sprint 6 – Observabilidad
 
 Objetivo
 
-Implementar una estrategia de observabilidad para los servicios desplegados en Amazon ECS Fargate, centralizando logs, métricas y alarmas, e incorporando Prometheus y Grafana como componentes de monitoreo.
+Implementar observabilidad para los servicios ECS Fargate mediante logs, métricas, alarmas, Prometheus y Grafana.
 
-Implementación
+Implementado
 
 ✅ Amazon CloudWatch
 
-✅ CloudWatch Logs para servicios ECS
+✅ CloudWatch Logs para ECS
 
 ✅ CloudWatch Metrics
 
-✅ CloudWatch Alarm para CPU del Frontend
+✅ CloudWatch Alarm de CPU para Frontend
 
-✅ ECS Container Insights habilitado
+✅ ECS Container Insights
 
 ✅ Módulo Terraform monitoring
 
-✅ Prometheus desplegado sobre ECS Fargate
+✅ Prometheus sobre ECS Fargate
 
-✅ Grafana desplegado sobre ECS Fargate
+✅ Grafana sobre ECS Fargate
 
-✅ Log Groups dedicados para Prometheus y Grafana
+✅ Log Groups dedicados
 
 ✅ Security Group dedicado para monitoring
 
-✅ VPC Endpoint de CloudWatch Logs con Private DNS
+✅ VPC Endpoint de CloudWatch Logs
 
-✅ Ejecución de Prometheus y Grafana en subredes privadas
+✅ Private DNS
 
-✅ Validación de conectividad mediante VPC Endpoint
+✅ Prometheus y Grafana en subredes privadas
 
-✅ Centralización de logs en CloudWatch Logs
+✅ Centralización de logs en CloudWatch
 
-Servicios de monitoring
+Estado de servicios
 
 bankcloud-dev-grafana
 Desired: 1
@@ -839,114 +555,138 @@ Desired: 1
 Running: 1
 Pending: 0
 
-Evidencia de CloudWatch Logs
+CloudWatch Logs
 
 /ecs/bankcloud-dev-grafana
-ecs/grafana/22d4554a75934d0a963765be4cf4ea97
+└── ecs/grafana/22d4554a75934d0a963765be4cf4ea97
 
 /ecs/bankcloud-dev-prometheus
-ecs/prometheus/51986fc72da741c7980653472fd63733
-ecs/prometheus/d78b2e8a82cb4ecb9dc22663b2ff9569
+├── ecs/prometheus/51986fc72da741c7980653472fd63733
+└── ecs/prometheus/d78b2e8a82cb4ecb9dc22663b2ff9569
 
-CloudWatch Alarm
+🚨 CloudWatch Alarm
 
-Se implementó y validó una alarma de CPU para el servicio Frontend:
+Se implementó y validó una alarma de CPU para el servicio Frontend. La alarma fue llevada de forma controlada al estado ALARM y posteriormente CloudWatch regresó a OK al evaluar nuevamente las métricas reales.
 
-bankcloud-dev-frontend-cpu-high
-
-La alarma fue llevada de forma controlada al estado ALARM y posteriormente CloudWatch la devolvió a OK al evaluar nuevamente las métricas reales.
-
-Troubleshooting realizado
+🔧 Troubleshooting destacado
 
 Durante el despliegue de Prometheus y Grafana, las tareas ECS presentaron:
 
 ResourceInitializationError:
-The task cannot find the Amazon CloudWatch log group defined in the task definition.
+The task cannot find the Amazon CloudWatch log group defined
+in the task definition.
 
-El diagnóstico incluyó:
+Se validaron:
 
-Validación de Task Definitions.
+Task Definitions y Log Groups.
 
-Validación de Log Groups.
+Route Tables de las subredes privadas.
 
-Validación de rutas de subredes privadas.
+NAT Gateway.
 
-Validación del NAT Gateway.
+Network ACL.
 
-Validación de Network ACL.
+Security Groups.
 
-Validación de Security Groups.
+VPC Endpoint com.amazonaws.us-east-1.logs.
 
-Validación del VPC Endpoint com.amazonaws.us-east-1.logs.
+Private DNS.
 
-Validación de Private DNS.
+La causa se resolvió corrigiendo el Security Group del VPC Endpoint para permitir tráfico HTTPS/443 desde la VPC.
 
-Corrección del Security Group del VPC Endpoint para permitir HTTPS (443) desde la VPC.
+Después del cambio aplicado mediante Terraform, Prometheus y Grafana alcanzaron estado estable:
 
-Después de aplicar la corrección mediante Terraform, las nuevas tareas de Prometheus y Grafana iniciaron correctamente y alcanzaron estado estable.
+Desired: 1
+Running: 1
+Pending: 0
 
-Resultado
+Estado: COMPLETADO ✅
 
-La plataforma dispone ahora de observabilidad basada en CloudWatch, Prometheus y Grafana, con servicios de monitoring ejecutándose en ECS Fargate dentro de subredes privadas y logs centralizados en CloudWatch.
+📅 Hoja de ruta
 
-Sprint 6: COMPLETADO ✅
+Sprint
 
-📈 Avance General
+Objetivo
 
-SprintAvance
+Estado
 
+1
 
-
-Sprint 1
-
-✅ 100%
-
-Sprint 2
-
-✅ 100%
-
-Sprint 3
+Arquitectura y Networking
 
 ✅ 100%
 
-Sprint 4
+2
+
+Docker y Amazon ECR
 
 ✅ 100%
 
-Sprint 5
+3
+
+Amazon ECS Fargate + ALB
+
+✅ 100%
+
+4
+
+Amazon RDS PostgreSQL
+
+✅ 100%
+
+5
+
+GitHub Actions CI/CD
 
 🟡 95%
 
-Sprint 6
+6
+
+Observabilidad
 
 ✅ 100%
 
-Sprint 7
+7
 
-⏳ 0%
+Seguridad / DevSecOps
 
-Sprint 8
+⏳ Pendiente
 
-⏳ 0%
+8
 
-Avance aproximado del proyecto: 62%
+Alta disponibilidad, DR y Troubleshooting
 
-Sprint 1  ████████████████████ 100%
-Sprint 2  ████████████████████ 100%
-Sprint 3  ████████████████████ 100%
-Sprint 4  ████████████████████ 100%
-Sprint 5  ███████████████████░  95%
-Sprint 6  ████████████████████ 100%
-Sprint 7  ░░░░░░░░░░░░░░░░░░░░   0%
-Sprint 8  ░░░░░░░░░░░░░░░░░░░░   0%
+⏳ Pendiente
 
+📈 Avance general
+
+Sprint 1  ████████████████████  100%
+Sprint 2  ████████████████████  100%
+Sprint 3  ████████████████████  100%
+Sprint 4  ████████████████████  100%
+Sprint 5  ███████████████████░   95%
+Sprint 6  ████████████████████  100%
+Sprint 7  ░░░░░░░░░░░░░░░░░░░░    0%
+Sprint 8  ░░░░░░░░░░░░░░░░░░░░    0%
+
+Avance aproximado: 74%
 
 🏆 Estado actual
 
-Actualmente BankCloud cuenta con una plataforma funcional que integra:
+BankCloud integra actualmente:
 
-Terraform + AWS VPC + ECS Fargate + ECR + ALB + RDS PostgreSQL + Secrets Manager + KMS + CloudWatch + CloudWatch Logs + CloudWatch Alarms + Container Insights + Prometheus + Grafana + Cloud Map + Docker + Trivy + GitHub Actions.
+Terraform + AWS VPC + ECS Fargate + ECR + ALB + RDS PostgreSQL + Secrets Manager + KMS + CloudWatch + CloudWatch Logs + CloudWatch Alarms + Container Insights + Prometheus + Grafana + Cloud Map + Docker + Trivy + GitHub Actions
 
-El despliegue desde GitHub hasta AWS está automatizado, el endpoint de salud de la aplicación responde correctamente a través del Application Load Balancer y la capa de observabilidad cuenta con servicios de Prometheus y Grafana ejecutándose correctamente sobre ECS Fargate.
+El despliegue desde GitHub hasta AWS está automatizado, el endpoint /_healthz responde correctamente mediante el Application Load Balancer y la capa de observabilidad ejecuta Prometheus y Grafana sobre ECS Fargate con logs centralizados en CloudWatch.
 
-El Sprint 6 – Observabilidad está completado. El siguiente hito del proyecto es continuar con el Sprint 7 según la hoja de ruta y finalizar la evidencia pendiente del rollback controlado del Sprint 5.
+Próximos pasos
+
+Finalizar la prueba controlada de rollback del Sprint 5.
+
+Iniciar Sprint 7 – Seguridad / DevSecOps.
+
+Continuar con Sprint 8 – Alta disponibilidad, DR y Troubleshooting.
+
+📌 Estado del proyecto
+
+6 sprints implementados · Sprint 5 al 95% · Observabilidad operativa · Próximo hito: DevSecOps
