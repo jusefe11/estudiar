@@ -102,6 +102,10 @@ resource "aws_security_group" "ecs" {
 # VPC Endpoint Security Group
 #####################################
 
+#####################################
+# VPC Endpoint Security Group
+#####################################
+
 resource "aws_security_group" "vpce" {
 
   name        = "${var.project_name}-${var.environment}-vpce"
@@ -109,18 +113,30 @@ resource "aws_security_group" "vpce" {
   vpc_id      = aws_vpc.this.id
 
   ingress {
-
-    description = "HTTPS from ECS"
+    description = "HTTPS from VPC"
 
     from_port = 443
     to_port   = 443
     protocol  = "tcp"
 
-    security_groups = [
-      aws_security_group.ecs.id
+    cidr_blocks = [
+      aws_vpc.this.cidr_block
     ]
-
   }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name        = "${var.project_name}-${var.environment}-vpce"
+    Project     = var.project_name
+    Environment = var.environment
+  }
+}
 
   egress {
 
