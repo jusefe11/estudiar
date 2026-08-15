@@ -4,6 +4,10 @@ resource "aws_network_acl" "private" {
 
   subnet_ids = aws_subnet.private[*].id
 
+  # ============================================================
+  # INGRESS
+  # ============================================================
+
   # Entrada HTTPS
   ingress {
     rule_no    = 100
@@ -14,7 +18,7 @@ resource "aws_network_acl" "private" {
     to_port    = 443
   }
 
-  # Entrada puertos efímeros
+  # Entrada puertos efimeros
   ingress {
     rule_no    = 110
     protocol   = "tcp"
@@ -23,6 +27,30 @@ resource "aws_network_acl" "private" {
     from_port  = 1024
     to_port    = 65535
   }
+
+  # DNS UDP
+  ingress {
+    rule_no    = 120
+    protocol   = "udp"
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 53
+    to_port    = 53
+  }
+
+  # DNS TCP
+  ingress {
+    rule_no    = 130
+    protocol   = "tcp"
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 53
+    to_port    = 53
+  }
+
+  # ============================================================
+  # EGRESS
+  # ============================================================
 
   # Salida HTTPS
   egress {
@@ -34,7 +62,7 @@ resource "aws_network_acl" "private" {
     to_port    = 443
   }
 
-  # Salida puertos efímeros
+  # Salida puertos efimeros
   egress {
     rule_no    = 110
     protocol   = "tcp"
@@ -42,6 +70,26 @@ resource "aws_network_acl" "private" {
     cidr_block = "0.0.0.0/0"
     from_port  = 1024
     to_port    = 65535
+  }
+
+  # DNS UDP
+  egress {
+    rule_no    = 120
+    protocol   = "udp"
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 53
+    to_port    = 53
+  }
+
+  # DNS TCP
+  egress {
+    rule_no    = 130
+    protocol   = "tcp"
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 53
+    to_port    = 53
   }
 
   tags = {
