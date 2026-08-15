@@ -10,7 +10,6 @@ resource "aws_security_group" "alb" {
 
   ingress {
     description = "HTTP"
-
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -19,7 +18,6 @@ resource "aws_security_group" "alb" {
 
   ingress {
     description = "HTTPS"
-
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -27,12 +25,10 @@ resource "aws_security_group" "alb" {
   }
 
   egress {
-
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
-
   }
 
   tags = {
@@ -40,8 +36,8 @@ resource "aws_security_group" "alb" {
     Project     = var.project_name
     Environment = var.environment
   }
-
 }
+
 
 #####################################
 # ECS Security Group
@@ -54,40 +50,32 @@ resource "aws_security_group" "ecs" {
   vpc_id      = aws_vpc.this.id
 
   ingress {
-
     description = "Frontend"
-
-    from_port = 8080
-    to_port   = 8080
-    protocol  = "tcp"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
 
     security_groups = [
       aws_security_group.alb.id
     ]
-
   }
 
   ingress {
-
     description = "Product Catalog"
-
-    from_port = 3550
-    to_port   = 3550
-    protocol  = "tcp"
+    from_port   = 3550
+    to_port     = 3550
+    protocol    = "tcp"
 
     security_groups = [
       aws_security_group.alb.id
     ]
-
   }
 
   egress {
-
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
-
   }
 
   tags = {
@@ -95,12 +83,8 @@ resource "aws_security_group" "ecs" {
     Project     = var.project_name
     Environment = var.environment
   }
-
 }
 
-#####################################
-# VPC Endpoint Security Group
-#####################################
 
 #####################################
 # VPC Endpoint Security Group
@@ -112,12 +96,14 @@ resource "aws_security_group" "vpce" {
   description = "VPC Endpoint Security Group"
   vpc_id      = aws_vpc.this.id
 
+  # Permite HTTPS desde recursos dentro de la VPC.
+  # Necesario para ECS, Prometheus y Grafana hacia
+  # ECR, CloudWatch Logs, STS, etc.
   ingress {
     description = "HTTPS from VPC"
-
-    from_port = 443
-    to_port   = 443
-    protocol  = "tcp"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
 
     cidr_blocks = [
       aws_vpc.this.cidr_block
@@ -138,28 +124,13 @@ resource "aws_security_group" "vpce" {
   }
 }
 
-  egress {
-
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-
-  }
-
-  tags = {
-    Name        = "${var.project_name}-${var.environment}-vpce"
-    Project     = var.project_name
-    Environment = var.environment
-  }
-
-}
 
 #####################################
 # Monitoring Security Group
 #####################################
 
 resource "aws_security_group" "monitoring" {
+
   name        = "${var.project_name}-${var.environment}-monitoring"
   description = "Security Group for Prometheus and Grafana"
   vpc_id      = aws_vpc.this.id
