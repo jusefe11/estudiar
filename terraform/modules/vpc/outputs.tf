@@ -33,3 +33,8 @@ output "database_subnet_ids" {
   description = "Database subnet IDs"
   value       = aws_subnet.database[*].id
 }
+
+output "monitoring_security_group_id" {
+  description = "Security Group para Prometheus y Grafana"
+  value       = aws_security_group.monitoring.id
+}

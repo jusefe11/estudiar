@@ -98,3 +98,29 @@ module "rds" {
 
 }
 
+# ============================================================
+# MONITORING - PROMETHEUS + GRAFANA
+# ============================================================
+
+module "monitoring" {
+  source = "../../modules/monitoring"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  cluster_id = module.ecs.cluster_arn
+
+  private_subnets = module.vpc.private_subnet_ids
+
+  monitoring_security_group_id = module.vpc.monitoring_security_group_id
+
+  execution_role_arn = module.iam.execution_role_arn
+  task_role_arn      = module.iam.task_role_arn
+}
+
+# ============================================================
+# MONITORING - PROMETHEUS + GRAFANA
+# ============================================================
+
+
+
