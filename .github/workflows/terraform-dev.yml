@@ -151,7 +151,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # CD solamente comienza si CI terminó correctamente
+    # CD solamente comienza si CI terminÃƒÂ³ correctamente
     needs: ci
 
     environment:
@@ -193,14 +193,14 @@ jobs:
 
           else
 
-            echo "Ambiente no válido"
+            echo "Ambiente no vÃƒÂ¡lido"
             exit 1
 
           fi
 
 
       # ------------------------------------------------------
-      # 12. Información del despliegue
+      # 12. InformaciÃƒÂ³n del despliegue
       # ------------------------------------------------------
 
       - name: Mostrar ambiente
@@ -363,7 +363,7 @@ jobs:
             --output text)
 
           echo "ALB: $ALB_DNS"
-          echo "Probando http://$ALB_DNS/_healthz"
+          echo "Probando http://$ALB_DNS/"
 
           curl \
             --fail \
@@ -372,17 +372,17 @@ jobs:
             --retry 5 \
             --retry-delay 10 \
             --retry-all-errors \
-            "http://$ALB_DNS/_healthz"
+            "http://$ALB_DNS/"
 
           echo ""
           echo "Smoke Test PASSED"
 
             # ------------------------------------------------------
-      # Rollback automático
+      # Rollback automÃƒÂ¡tico
       # ------------------------------------------------------
 
       - name: Rollback ECS
-        if: failure()
+        if: failure() && env.FRONTEND_PREVIOUS != '' && env.PRODUCT_PREVIOUS != ''
         run: |
           echo "Deployment fallido. Ejecutando rollback..."
 
@@ -398,7 +398,7 @@ jobs:
             --task-definition "$PRODUCT_PREVIOUS" \
             --region $AWS_REGION
 
-          echo "Esperando estabilización después del rollback..."
+          echo "Esperando estabilizaciÃƒÂ³n despuÃƒÂ©s del rollback..."
 
           aws ecs wait services-stable \
             --cluster bankcloud-dev \
