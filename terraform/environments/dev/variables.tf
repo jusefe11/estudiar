@@ -44,3 +44,8 @@ variable "productcatalog_image_tag" {
   type        = string
   default     = "0b6a28fc3b749c4c5e0a30e0cefa9f101d346e8c"
 }
+variable "image_tag" {
+  description = "Tag de las imagenes Docker desplegadas en ECS"
+  type        = string
+  default     = "latest"
+}
