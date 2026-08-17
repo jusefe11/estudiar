@@ -32,9 +32,15 @@ variable "database_subnets" {
   type        = list(string)
 }
 
-variable "image_tag" {
+variable "frontend_image_tag" {
   description = "Tag de las imagenes Docker para ECS"
   type        = string
   default     = "latest"
 }
 
+
+variable "productcatalog_image_tag" {
+  description = "Tag Docker de Product Catalog"
+  type        = string
+  default     = "0b6a28fc3b749c4c5e0a30e0cefa9f101d346e8c"
+}

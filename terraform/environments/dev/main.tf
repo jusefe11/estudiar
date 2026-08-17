@@ -25,7 +25,8 @@ module "ecs" {
   environment  = var.environment
 
   # Tag de la imagen Docker recibido desde el pipeline
-  image_tag = var.image_tag
+  frontend_image_tag       = var.frontend_image_tag
+  productcatalog_image_tag = var.productcatalog_image_tag
 
   execution_role_arn = module.iam.execution_role_arn
   task_role_arn      = module.iam.task_role_arn
