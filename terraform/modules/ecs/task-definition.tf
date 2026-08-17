@@ -14,7 +14,7 @@ resource "aws_ecs_task_definition" "frontend" {
   container_definitions = jsonencode([
     {
       name      = "frontend"
-      image     = "${var.frontend_repository_url}:${var.image_tag}"
+      image     = "${var.frontend_repository_url}:${var.frontend_image_tag}"
       essential = true
 
       environment = [
@@ -26,8 +26,8 @@ resource "aws_ecs_task_definition" "frontend" {
 
       portMappings = [
         {
-          containerPort = 8080
-          hostPort      = 8080
+          containerPort = 80
+          hostPort      = 80
           protocol      = "tcp"
         }
       ]
@@ -62,7 +62,7 @@ resource "aws_ecs_task_definition" "productcatalogservice" {
   container_definitions = jsonencode([
     {
       name      = "productcatalogservice"
-      image     = "${var.productcatalog_repository_url}:${var.image_tag}"
+      image     = "${var.productcatalog_repository_url}:${var.productcatalog_image_tag}"
       essential = true
 
       portMappings = [

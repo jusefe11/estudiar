@@ -1,0 +1,55 @@
+{
+    "containerDefinitions":  [
+                                 {
+                                     "name":  "frontend",
+                                     "image":  "077815499284.dkr.ecr.us-east-1.amazonaws.com/bankcloud/frontend:latest",
+                                     "cpu":  0,
+                                     "portMappings":  [
+                                                          {
+                                                              "containerPort":  80,
+                                                              "hostPort":  80,
+                                                              "protocol":  "tcp"
+                                                          }
+                                                      ],
+                                     "essential":  true,
+                                     "environment":  [
+                                                         {
+                                                             "name":  "PRODUCT_CATALOG_SERVICE_ADDR",
+                                                             "value":  "bankcloud-dev-productcatalogservice:3550"
+                                                         }
+                                                     ],
+                                     "mountPoints":  [
+
+                                                     ],
+                                     "volumesFrom":  [
+
+                                                     ],
+                                     "logConfiguration":  {
+                                                              "logDriver":  "awslogs",
+                                                              "options":  {
+                                                                              "awslogs-group":  "/ecs/bankcloud-dev-frontend",
+                                                                              "awslogs-region":  "us-east-1",
+                                                                              "awslogs-stream-prefix":  "ecs"
+                                                                          }
+                                                          },
+                                     "systemControls":  [
+
+                                                        ]
+                                 }
+                             ],
+    "family":  "bankcloud-dev-frontend",
+    "taskRoleArn":  "arn:aws:iam::077815499284:role/bankcloud-dev-ecs-task-role",
+    "executionRoleArn":  "arn:aws:iam::077815499284:role/bankcloud-dev-ecs-execution-role",
+    "networkMode":  "awsvpc",
+    "volumes":  [
+
+                ],
+    "placementConstraints":  [
+
+                             ],
+    "requiresCompatibilities":  [
+                                    "FARGATE"
+                                ],
+    "cpu":  "256",
+    "memory":  "512"
+}

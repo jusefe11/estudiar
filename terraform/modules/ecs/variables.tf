@@ -46,9 +46,14 @@ variable "productcatalog_target_group_arn" {
   type        = string
 }
 
-variable "image_tag" {
+variable "frontend_image_tag" {
   description = "Tag de las imagenes Docker desplegadas en ECS"
   type        = string
   default     = "latest"
 }
 
+
+variable "productcatalog_image_tag" {
+  description = "Tag Docker de Product Catalog"
+  type        = string
+}

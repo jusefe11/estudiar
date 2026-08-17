@@ -28,9 +28,13 @@ resource "aws_lb" "this" {
 
 resource "aws_lb_target_group" "frontend" {
 
-  name = "${var.project_name}-frontend"
+  name_prefix = "bc-fe-"
 
-  port = 8080
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  port = 80
 
   protocol = "HTTP"
 
@@ -42,7 +46,7 @@ resource "aws_lb_target_group" "frontend" {
 
     enabled = true
 
-    path = "/_healthz"
+    path = "/"
 
     protocol = "HTTP"
 
@@ -122,3 +126,4 @@ resource "aws_lb_listener" "http" {
   }
 
 }
+

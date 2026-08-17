@@ -29,7 +29,7 @@ resource "aws_ecs_service" "frontend" {
 
     container_name = "frontend"
 
-    container_port = 8080
+    container_port = 80
 
   }
 

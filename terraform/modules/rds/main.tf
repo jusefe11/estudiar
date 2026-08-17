@@ -63,7 +63,7 @@ resource "aws_db_instance" "postgres" {
   identifier = "${var.project_name}-${var.environment}-postgres"
 
   engine         = "postgres"
-  engine_version = "17.5"
+  engine_version = "17.9"
 
   instance_class = var.instance_class
 
@@ -81,7 +81,7 @@ resource "aws_db_instance" "postgres" {
   publicly_accessible = false
 
   storage_encrypted = true
-  kms_key_id         = aws_kms_key.rds.arn
+  kms_key_id        = aws_kms_key.rds.arn
 
   # Free Tier
   backup_retention_period = 1

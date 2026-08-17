@@ -8,6 +8,15 @@ resource "aws_network_acl" "private" {
   # INGRESS
   # ============================================================
 
+  # Entrada HTTP para frontend ECS / ALB
+  ingress {
+    rule_no    = 90
+    protocol   = "tcp"
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 80
+    to_port    = 80
+  }
   # Entrada HTTPS
   ingress {
     rule_no    = 100
