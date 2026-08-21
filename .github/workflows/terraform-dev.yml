@@ -151,7 +151,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # CD solamente comienza si CI terminÃƒÂ³ correctamente
+    # CD solamente comienza si CI terminó correctamente
     needs: ci
 
     environment:
@@ -193,14 +193,29 @@ jobs:
 
           else
 
-            echo "Ambiente no vÃƒÂ¡lido"
+            echo "Ambiente no válido"
             exit 1
 
           fi
 
 
       # ------------------------------------------------------
-      # 12. InformaciÃƒÂ³n del despliegue
+      # 11b. Definir variables ECS/ALB según el ambiente
+      #      (evita hardcodear "bankcloud-dev" en todos los pasos)
+      # ------------------------------------------------------
+
+      - name: Definir variables de entorno ECS/ALB
+        run: |
+          ENV_LOWER=$(echo "${{ github.event.inputs.environment }}" | tr '[:upper:]' '[:lower:]')
+
+          echo "CLUSTER_NAME=bankcloud-${ENV_LOWER}" >> "$GITHUB_ENV"
+          echo "SERVICE_FRONTEND=bankcloud-${ENV_LOWER}-frontend" >> "$GITHUB_ENV"
+          echo "SERVICE_PRODUCT=bankcloud-${ENV_LOWER}-productcatalogservice" >> "$GITHUB_ENV"
+          echo "ALB_NAME=bankcloud-${ENV_LOWER}-alb" >> "$GITHUB_ENV"
+
+
+      # ------------------------------------------------------
+      # 12. Información del despliegue
       # ------------------------------------------------------
 
       - name: Mostrar ambiente
@@ -209,6 +224,7 @@ jobs:
           echo "Proyecto: BankCloud"
           echo "Ambiente: ${{ github.event.inputs.environment }}"
           echo "Directorio Terraform: $TF_DIR"
+          echo "Cluster ECS: $CLUSTER_NAME"
           echo "Image Tag: ${{ github.sha }}"
           echo "========================================"
 
@@ -263,156 +279,162 @@ jobs:
 
 
       # ------------------------------------------------------
-# ------------------------------------------------------
-# 18. Terraform Plan
-# ------------------------------------------------------
+      # 18. Terraform Plan
+      # ------------------------------------------------------
 
-- name: Terraform Plan
-  run: |
-    terraform -chdir=$TF_DIR plan \
-      -input=false \
-      -lock-timeout=5m \
-      -var="frontend_image_tag=${{ github.sha }}" \
-      -var="productcatalog_image_tag=${{ github.sha }}" \
-      -out=tfplan
+      - name: Terraform Plan
+        run: |
+          terraform -chdir=$TF_DIR plan \
+            -input=false \
+            -lock-timeout=5m \
+            -var="frontend_image_tag=${{ github.sha }}" \
+            -var="productcatalog_image_tag=${{ github.sha }}" \
+            -out=tfplan
 
-# ------------------------------------------------------
-# Guardar versiones actuales para Rollback
-# ------------------------------------------------------
 
-- name: Save Current ECS Task Definitions
-  run: |
-    FRONTEND_PREVIOUS=$(aws ecs describe-services \
-      --cluster bankcloud-dev \
-      --services bankcloud-dev-frontend \
-      --region $AWS_REGION \
-      --query "services[0].taskDefinition" \
-      --output text)
+      # ------------------------------------------------------
+      # Guardar versiones actuales para Rollback
+      # ------------------------------------------------------
 
-    PRODUCT_PREVIOUS=$(aws ecs describe-services \
-      --cluster bankcloud-dev \
-      --services bankcloud-dev-productcatalogservice \
-      --region $AWS_REGION \
-      --query "services[0].taskDefinition" \
-      --output text)
+      - name: Save Current ECS Task Definitions
+        run: |
+          FRONTEND_PREVIOUS=$(aws ecs describe-services \
+            --cluster $CLUSTER_NAME \
+            --services $SERVICE_FRONTEND \
+            --region $AWS_REGION \
+            --query "services[0].taskDefinition" \
+            --output text)
 
-    echo "FRONTEND_PREVIOUS=$FRONTEND_PREVIOUS" >> "$GITHUB_ENV"
-    echo "PRODUCT_PREVIOUS=$PRODUCT_PREVIOUS" >> "$GITHUB_ENV"
+          PRODUCT_PREVIOUS=$(aws ecs describe-services \
+            --cluster $CLUSTER_NAME \
+            --services $SERVICE_PRODUCT \
+            --region $AWS_REGION \
+            --query "services[0].taskDefinition" \
+            --output text)
 
-    echo "Frontend anterior: $FRONTEND_PREVIOUS"
-    echo "ProductCatalog anterior: $PRODUCT_PREVIOUS"
+          echo "FRONTEND_PREVIOUS=$FRONTEND_PREVIOUS" >> "$GITHUB_ENV"
+          echo "PRODUCT_PREVIOUS=$PRODUCT_PREVIOUS" >> "$GITHUB_ENV"
 
-# ------------------------------------------------------
-# 19. Terraform Apply
-# ------------------------------------------------------
+          echo "Frontend anterior: $FRONTEND_PREVIOUS"
+          echo "ProductCatalog anterior: $PRODUCT_PREVIOUS"
 
-- name: Terraform Apply
-  run: |
-    terraform -chdir=$TF_DIR apply \
-      -input=false \
-      -auto-approve \
-      tfplan
 
-# ------------------------------------------------------
-# 20. Esperar estabilidad de ECS
-# ------------------------------------------------------
+      # ------------------------------------------------------
+      # 19. Terraform Apply
+      # ------------------------------------------------------
 
-- name: Wait for ECS Services Stable
-  run: |
-    echo "Esperando que ECS termine el deployment..."
+      - name: Terraform Apply
+        run: |
+          terraform -chdir=$TF_DIR apply \
+            -input=false \
+            -auto-approve \
+            tfplan
 
-    aws ecs wait services-stable \
-      --cluster bankcloud-dev \
-      --services \
-        bankcloud-dev-frontend \
-        bankcloud-dev-productcatalogservice \
-      --region $AWS_REGION
 
-    echo "ECS estable"
+      # ------------------------------------------------------
+      # 20. Esperar estabilidad de ECS
+      # ------------------------------------------------------
 
-# ------------------------------------------------------
-# 21. Verificar servicios ECS
-# ------------------------------------------------------
+      - name: Wait for ECS Services Stable
+        run: |
+          echo "Esperando que ECS termine el deployment..."
 
-- name: Verify ECS Services
-  run: |
-    aws ecs describe-services \
-      --cluster bankcloud-dev \
-      --services \
-        bankcloud-dev-frontend \
-        bankcloud-dev-productcatalogservice \
-      --region $AWS_REGION \
-      --query "services[].{Service:serviceName,Desired:desiredCount,Running:runningCount,Pending:pendingCount}" \
-      --output table
+          aws ecs wait services-stable \
+            --cluster $CLUSTER_NAME \
+            --services \
+              $SERVICE_FRONTEND \
+              $SERVICE_PRODUCT \
+            --region $AWS_REGION
 
-# ------------------------------------------------------
-# 22. Smoke Test
-# ------------------------------------------------------
+          echo "ECS estable"
 
-- name: Smoke Test
-  run: |
-    echo "Obteniendo DNS del ALB..."
 
-    ALB_DNS=$(aws elbv2 describe-load-balancers \
-      --names bankcloud-dev-alb \
-      --region $AWS_REGION \
-      --query "LoadBalancers[0].DNSName" \
-      --output text)
+      # ------------------------------------------------------
+      # 21. Verificar servicios ECS
+      # ------------------------------------------------------
 
-    echo "ALB: $ALB_DNS"
+      - name: Verify ECS Services
+        run: |
+          aws ecs describe-services \
+            --cluster $CLUSTER_NAME \
+            --services \
+              $SERVICE_FRONTEND \
+              $SERVICE_PRODUCT \
+            --region $AWS_REGION \
+            --query "services[].{Service:serviceName,Desired:desiredCount,Running:runningCount,Pending:pendingCount}" \
+            --output table
 
-    curl \
-      --fail \
-      --show-error \
-      --silent \
-      --retry 5 \
-      --retry-delay 10 \
-      --retry-all-errors \
-      "http://$ALB_DNS/"
 
-    echo "Smoke Test PASSED"
+      # ------------------------------------------------------
+      # 22. Smoke Test
+      # ------------------------------------------------------
 
-# ------------------------------------------------------
-# Rollback automático
-# ------------------------------------------------------
+      - name: Smoke Test
+        run: |
+          echo "Obteniendo DNS del ALB..."
 
-- name: Rollback ECS
-  if: failure() && env.FRONTEND_PREVIOUS != '' && env.PRODUCT_PREVIOUS != ''
-  run: |
-    echo "Deployment fallido. Ejecutando rollback..."
+          ALB_DNS=$(aws elbv2 describe-load-balancers \
+            --names $ALB_NAME \
+            --region $AWS_REGION \
+            --query "LoadBalancers[0].DNSName" \
+            --output text)
 
-    aws ecs update-service \
-      --cluster bankcloud-dev \
-      --service bankcloud-dev-frontend \
-      --task-definition "$FRONTEND_PREVIOUS" \
-      --region $AWS_REGION
+          echo "ALB: $ALB_DNS"
 
-    aws ecs update-service \
-      --cluster bankcloud-dev \
-      --service bankcloud-dev-productcatalogservice \
-      --task-definition "$PRODUCT_PREVIOUS" \
-      --region $AWS_REGION
+          curl \
+            --fail \
+            --show-error \
+            --silent \
+            --retry 5 \
+            --retry-delay 10 \
+            --retry-all-errors \
+            "http://$ALB_DNS/"
 
-    aws ecs wait services-stable \
-      --cluster bankcloud-dev \
-      --services \
-        bankcloud-dev-frontend \
-        bankcloud-dev-productcatalogservice \
-      --region $AWS_REGION
+          echo "Smoke Test PASSED"
 
-    echo "ROLLBACK COMPLETADO"
 
-# ------------------------------------------------------
-# 23. Resultado
-# ------------------------------------------------------
+      # ------------------------------------------------------
+      # Rollback automático
+      # ------------------------------------------------------
 
-- name: Deployment Completed
-  run: |
-    echo "========================================"
-    echo "CI/CD COMPLETADO"
-    echo "Proyecto: BankCloud"
-    echo "Ambiente: ${{ github.event.inputs.environment }}"
-    echo "Image Tag: ${{ github.sha }}"
-    echo "ECS Deployment: OK"
-    echo "Smoke Test: OK"
-    echo "========================================"
+      - name: Rollback ECS
+        if: failure() && env.FRONTEND_PREVIOUS != '' && env.PRODUCT_PREVIOUS != ''
+        run: |
+          echo "Deployment fallido. Ejecutando rollback..."
+
+          aws ecs update-service \
+            --cluster $CLUSTER_NAME \
+            --service $SERVICE_FRONTEND \
+            --task-definition "$FRONTEND_PREVIOUS" \
+            --region $AWS_REGION
+
+          aws ecs update-service \
+            --cluster $CLUSTER_NAME \
+            --service $SERVICE_PRODUCT \
+            --task-definition "$PRODUCT_PREVIOUS" \
+            --region $AWS_REGION
+
+          aws ecs wait services-stable \
+            --cluster $CLUSTER_NAME \
+            --services \
+              $SERVICE_FRONTEND \
+              $SERVICE_PRODUCT \
+            --region $AWS_REGION
+
+          echo "ROLLBACK COMPLETADO"
+
+
+      # ------------------------------------------------------
+      # 23. Resultado
+      # ------------------------------------------------------
+
+      - name: Deployment Completed
+        run: |
+          echo "========================================"
+          echo "CI/CD COMPLETADO"
+          echo "Proyecto: BankCloud"
+          echo "Ambiente: ${{ github.event.inputs.environment }}"
+          echo "Image Tag: ${{ github.sha }}"
+          echo "ECS Deployment: OK"
+          echo "Smoke Test: OK"
+          echo "========================================"
