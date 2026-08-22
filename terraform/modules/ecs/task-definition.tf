@@ -1,6 +1,10 @@
-resource "aws_ecs_task_definition" "frontend" {
+﻿resource "aws_ecs_task_definition" "frontend" {
 
   family = "${var.project_name}-${var.environment}-frontend"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
@@ -45,10 +49,13 @@ resource "aws_ecs_task_definition" "frontend" {
   ])
 }
 
-
 resource "aws_ecs_task_definition" "productcatalogservice" {
 
   family = "${var.project_name}-${var.environment}-productcatalogservice"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"

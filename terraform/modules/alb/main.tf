@@ -15,15 +15,10 @@ resource "aws_lb" "this" {
   enable_deletion_protection = false
 
   tags = {
-
-    Name = "${var.project_name}-${var.environment}-alb"
-
-    Project = var.project_name
-
+    Name        = "${var.project_name}-${var.environment}-alb"
+    Project     = var.project_name
     Environment = var.environment
-
   }
-
 }
 
 resource "aws_lb_target_group" "frontend" {
@@ -34,52 +29,8 @@ resource "aws_lb_target_group" "frontend" {
     create_before_destroy = true
   }
 
-  port = 80
-
-  protocol = "HTTP"
-
-  target_type = "ip"
-
-  vpc_id = var.vpc_id
-
-  health_check {
-
-  enabled = true
-
-  path = "/_healthz"
-
-  protocol = "HTTP"
-
-  matcher = "200"
-
-  interval = 30
-
-  timeout = 5
-
-  healthy_threshold = 2
-
-  unhealthy_threshold = 2
-
-}
-
-  tags = {
-
-    Project = var.project_name
-
-    Environment = var.environment
-
-  }
-
-}
-
-resource "aws_lb_target_group" "productcatalogservice" {
-
-  name = "${var.project_name}-catalog"
-
-  port = 3550
-
-  protocol = "HTTP"
-
+  port        = 80
+  protocol    = "HTTP"
   target_type = "ip"
 
   vpc_id = var.vpc_id
@@ -88,9 +39,13 @@ resource "aws_lb_target_group" "productcatalogservice" {
 
     enabled = true
 
-    path = "/"
+    path = "/_healthz"
 
     protocol = "HTTP"
+
+    matcher = "200"
+
+    port = "traffic-port"
 
     interval = 30
 
@@ -103,11 +58,47 @@ resource "aws_lb_target_group" "productcatalogservice" {
   }
 
   tags = {
-
-    Project = var.project_name
-
+    Project     = var.project_name
     Environment = var.environment
+  }
 
+}
+
+resource "aws_lb_target_group" "productcatalogservice" {
+
+  name = "${var.project_name}-catalog"
+
+  port        = 3550
+  protocol    = "HTTP"
+  target_type = "ip"
+
+  vpc_id = var.vpc_id
+
+  health_check {
+
+    enabled = true
+
+    path = "/"
+
+    protocol = "HTTP"
+
+    matcher = "200"
+
+    port = "traffic-port"
+
+    interval = 30
+
+    timeout = 5
+
+    healthy_threshold = 2
+
+    unhealthy_threshold = 2
+
+  }
+
+  tags = {
+    Project     = var.project_name
+    Environment = var.environment
   }
 
 }
@@ -128,4 +119,3 @@ resource "aws_lb_listener" "http" {
   }
 
 }
-
