@@ -44,21 +44,23 @@ resource "aws_lb_target_group" "frontend" {
 
   health_check {
 
-    enabled = true
+  enabled = true
 
-    path = "/"
+  path = "/_healthz"
 
-    protocol = "HTTP"
+  protocol = "HTTP"
 
-    interval = 30
+  matcher = "200"
 
-    timeout = 5
+  interval = 30
 
-    healthy_threshold = 2
+  timeout = 5
 
-    unhealthy_threshold = 2
+  healthy_threshold = 2
 
-  }
+  unhealthy_threshold = 2
+
+}
 
   tags = {
 
